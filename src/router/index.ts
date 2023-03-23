@@ -58,53 +58,6 @@ export const constantRoutes: RouteRecordRaw[] = [
     ],
   },
   {
-    path: '/unocss',
-    component: Layout,
-    redirect: '/unocss/index',
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/unocss/index.vue'),
-        name: 'UnoCSS',
-        meta: {
-          title: 'unocss',
-          svgIcon: 'i-simple-icons-unocss',
-        },
-      },
-    ],
-  },
-  {
-    path: '/vueuse',
-    component: Layout,
-    redirect: '/vueuse/index',
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/vueuse/index.vue'),
-        name: 'VueUse',
-        meta: {
-          title: 'vueuse',
-          svgIcon: 'i-logos-vueuse',
-        },
-      },
-    ],
-  },
-  {
-    path: '/link',
-    component: Layout,
-    children: [
-      {
-        path: 'https://github.com/xiaozhangtongx',
-        component: () => {},
-        name: 'Link',
-        meta: {
-          title: '外链',
-          svgIcon: 'i-bi-github',
-        },
-      },
-    ],
-  },
-  {
     path: '/table',
     component: Layout,
     redirect: '/table/element-plus',
@@ -204,35 +157,6 @@ export const constantRoutes: RouteRecordRaw[] = [
         name: 'Menu2',
         meta: {
           title: 'menu2',
-        },
-      },
-    ],
-  },
-  {
-    path: '/hook-demo',
-    component: Layout,
-    redirect: '/hook-demo/use-fetch-select',
-    name: 'HookDemo',
-    meta: {
-      title: 'hook 示例',
-      svgIcon: 'i-mdi-hook',
-      alwaysShow: true,
-    },
-    children: [
-      {
-        path: 'use-fetch-select',
-        component: () => import('@/views/hook-demo/use-fetch-select.vue'),
-        name: 'UseFetchSelect',
-        meta: {
-          title: 'useFetchSelect',
-        },
-      },
-      {
-        path: 'use-fullscreen-loading',
-        component: () => import('@/views/hook-demo/use-fullscreen-loading.vue'),
-        name: 'UseFullscreenLoading',
-        meta: {
-          title: 'useFullscreenLoading',
         },
       },
     ],

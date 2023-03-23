@@ -1,29 +1,17 @@
 {
-  "name": "v3-admin-vite",
-  "version": "3.3.3",
-  "description": "基于v3-admin-vite二次开发的后台管理模板",
+  "name": "劳务实名管理系统",
+  "version": "1.0",
+  "description": "劳务实名管理系统",
   "author": {
     "name": "xiaozhangtx",
     "email": "2446159171@qq.com",
     "url": "https://github.com/xiaozhangtongx"
   },
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/xiaozhangtongx/v3-admin-vite.git"
-  },
   "keywords": [
-    "vue",
-    "vue3",
-    "admin",
-    "vue-admin",
-    "vue3-admin-vite",
-    "vite",
-    "vite-admin",
-    "element-plus",
-    "element-plus-admin",
-    "ts",
-    "typescript"
+    "劳务",
+    "实名制",
+    "管理系统",
+    "智慧工地"
   ],
   "scripts": {
     "dev": "vite",

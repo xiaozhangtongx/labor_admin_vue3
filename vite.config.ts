@@ -6,7 +6,7 @@ import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
 import UnoCSS from 'unocss/vite'
 
-// @ts-expect-error: to resolve Cannot find module 'unplugin-vue-define-options/vite
+// @ts-expect-error: to resolve Cannot find module 'unplugin-vue-define-options/vite'
 import DefineOptions from 'unplugin-vue-define-options/vite'
 
 import AutoImport from 'unplugin-auto-import/vite'
