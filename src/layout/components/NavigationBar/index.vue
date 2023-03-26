@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { UserFilled } from '@element-plus/icons-vue'
 import Breadcrumb from '../Breadcrumb/index.vue'
 import Hamburger from '../Hamburger/index.vue'
 import { useAppStore } from '@/store/modules/app'
@@ -48,8 +47,8 @@ const logout = () => {
       <Notify v-if="showNotify" class="right-menu-item" />
       <el-dropdown class="right-menu-item">
         <div class="right-menu-avatar">
-          <el-avatar :icon="UserFilled" :size="30" />
-          <span>{{ userStore.username }}</span>
+          <el-avatar :src="userStore.userInfo?.avatar" :size="30" />
+          <span>{{ userStore.userInfo?.username }}</span>
         </div>
         <template #dropdown>
           <el-dropdown-menu>

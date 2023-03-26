@@ -12,16 +12,19 @@ export function getLoginCodeApi() {
 /** 登录并返回 Token */
 export function loginApi(data: Login.ILoginRequestData) {
   return request<Login.LoginResponseData>({
-    url: 'users/login',
+    url: '/login',
     method: 'post',
     data,
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+    },
   })
 }
 
 /** 获取用户详情 */
 export function getUserInfoApi() {
   return request<Login.UserInfoResponseData>({
-    url: 'users/info',
+    url: 'sys-user/userInfo',
     method: 'get',
   })
 }

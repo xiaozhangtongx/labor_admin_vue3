@@ -7,13 +7,14 @@ import store from '@/store'
 import { getToken, removeToken, setToken } from '@/utils/cache/cookies'
 import router, { resetRouter } from '@/router'
 import { getUserInfoApi, loginApi } from '@/api/login'
-import { type ILoginRequestData } from '@/api/login/types/login'
+import type { IApiUserInfoData, ILoginRequestData } from '@/api/login/types/login'
 import asyncRouteSettings from '@/config/async-route'
 
 export const useUserStore = defineStore('user', () => {
   const token = ref<string>(getToken() || '')
   const roles = ref<string[]>([])
   const username = ref<string>('')
+  const userInfo = ref<IApiUserInfoData>()
 
   const permissionStore = usePermissionStore()
   const tagsViewStore = useTagsViewStore()
@@ -26,13 +27,13 @@ export const useUserStore = defineStore('user', () => {
   const login = (loginData: ILoginRequestData) => {
     return new Promise((resolve, reject) => {
       loginApi({
-        username: loginData.username,
+        phoneNum: loginData.phoneNum,
         password: loginData.password,
         code: loginData.code,
       })
-        .then((res) => {
-          setToken(res.data.token)
-          token.value = res.data.token
+        .then((res: any) => {
+          setToken(res.headers.authorization)
+          token.value = res.headers.authorization
           resolve(true)
         })
         .catch((error) => {
@@ -46,10 +47,11 @@ export const useUserStore = defineStore('user', () => {
       getUserInfoApi()
         .then((res) => {
           const data = res.data
+          userInfo.value = data
           username.value = data.username
           // 验证返回的 roles 是否是一个非空数组
           if (data.roles && data.roles.length > 0) {
-            roles.value = data.roles
+            roles.value = data.roles.map((role: any): string => role.roleCode)
           }
           else {
             // 塞入一个没有任何作用的默认角色，不然路由守卫逻辑会无限循环
@@ -95,7 +97,7 @@ export const useUserStore = defineStore('user', () => {
     roles.value = []
   }
 
-  return { token, roles, username, setRoles, login, getInfo, changeRoles, logout, resetToken }
+  return { token, roles, userInfo, setRoles, login, getInfo, changeRoles, logout, resetToken }
 })
 
 /** 在 setup 外使用 */

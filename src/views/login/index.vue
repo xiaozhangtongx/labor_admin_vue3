@@ -6,7 +6,6 @@ import type { FormInstance, FormRules } from 'element-plus'
 import { useUserStore } from '@/store/modules/user'
 import ThemeSwitch from '@/components/ThemeSwitch/index.vue'
 
-import { getLoginCodeApi } from '@/api/login'
 import { type ILoginRequestData } from '@/api/login/types/login'
 
 const router = useRouter()
@@ -19,26 +18,23 @@ const codeUrl = ref('')
 
 /** 登录表单数据 */
 const loginForm: ILoginRequestData = reactive({
-  username: 'admin',
-  password: '12345678',
-  code: '',
+  phoneNum: '15873976550',
+  password: '123456',
+  code: '1234',
 })
 /** 创建验证码 */
 const createCode = () => {
   // 先清空验证码的输入
   loginForm.code = ''
   // 获取验证码
-  codeUrl.value = ''
-  getLoginCodeApi().then((res) => {
-    codeUrl.value = res.data
-  })
+  codeUrl.value = 'https://dummyimage.com/100x40/dcdfe6/000000.png&text=1234'
 }
 /** 登录表单校验规则 */
 const loginFormRules: FormRules = {
-  username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
+  phoneNum: [{ required: true, message: '请输入手机号', trigger: 'blur' }],
   password: [
     { required: true, message: '请输入密码', trigger: 'blur' },
-    { min: 8, max: 16, message: '长度在 8 到 16 个字符', trigger: 'blur' },
+    { min: 6, max: 16, message: '长度在 6 到 16 个字符', trigger: 'blur' },
   ],
   code: [{ required: true, message: '请输入验证码', trigger: 'blur' }],
 }
@@ -49,7 +45,7 @@ const handleLogin = () => {
       loading.value = true
       useUserStore()
         .login({
-          username: loginForm.username,
+          phoneNum: loginForm.phoneNum,
           password: loginForm.password,
           code: loginForm.code,
         })
@@ -88,10 +84,10 @@ createCode()
           :rules="loginFormRules"
           @keyup.enter="handleLogin"
         >
-          <el-form-item prop="username">
+          <el-form-item prop="phoneNum">
             <el-input
-              v-model.trim="loginForm.username"
-              placeholder="用户名"
+              v-model.trim="loginForm.phoneNum"
+              placeholder="手机号"
               type="text"
               tabindex="1"
               :prefix-icon="User"

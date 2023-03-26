@@ -1,8 +1,8 @@
 import axios, { type AxiosInstance, type AxiosRequestConfig } from 'axios'
 import { ElMessage } from 'element-plus'
 import { get } from 'lodash-es'
-import { getToken } from './cache/cookies'
 import { useUserStoreHook } from '@/store/modules/user'
+import { getToken } from '@/utils/cache/cookies'
 
 /** 创建请求实例 */
 function createService() {
@@ -21,6 +21,9 @@ function createService() {
       const apiData = response.data as any
       // 这个 Code 是和后端约定的业务 Code
       const code = apiData.code
+      // 处理用户登录的情况
+      if (apiData.msg === '登陆成功')
+        return response
       // 如果没有 Code, 代表这不是项目后端开发的 API
       if (code === undefined) {
         ElMessage.error('非本系统的接口')
@@ -28,12 +31,12 @@ function createService() {
       }
       else {
         switch (code) {
-          case 0:
+          case 200:
             // code === 0 代表没有错误
             return apiData
           default:
             // 不是正确的 Code
-            ElMessage.error(apiData.message || 'Error')
+            ElMessage.error(apiData.msg || 'Error')
             return Promise.reject(new Error('Error'))
         }
       }
@@ -43,7 +46,7 @@ function createService() {
       const status = get(error, 'response.status')
       switch (status) {
         case 400:
-          error.message = '请求错误'
+          error.msg = '请求错误'
           break
         case 401:
           // Token 过期时，直接退出登录并强制刷新页面（会重定向到登录页）
@@ -51,36 +54,36 @@ function createService() {
           location.reload()
           break
         case 403:
-          error.message = '拒绝访问'
+          error.msg = '拒绝访问'
           break
         case 404:
-          error.message = '请求地址出错'
+          error.msg = '请求地址出错'
           break
         case 408:
-          error.message = '请求超时'
+          error.msg = '请求超时'
           break
         case 500:
-          error.message = '服务器内部错误'
+          error.msg = '服务器内部错误'
           break
         case 501:
-          error.message = '服务未实现'
+          error.msg = '服务未实现'
           break
         case 502:
-          error.message = '网关错误'
+          error.msg = '网关错误'
           break
         case 503:
-          error.message = '服务不可用'
+          error.msg = '服务不可用'
           break
         case 504:
-          error.message = '网关超时'
+          error.msg = '网关超时'
           break
         case 505:
-          error.message = 'HTTP 版本不受支持'
+          error.msg = 'HTTP 版本不受支持'
           break
         default:
           break
       }
-      ElMessage.error(error.message)
+      ElMessage.error(error.msg)
       return Promise.reject(error)
     },
   )
@@ -93,8 +96,7 @@ function createRequestFunction(service: AxiosInstance) {
     const configDefault = {
       headers: {
         // 携带 Token
-        'Authorization': `Bearer ${getToken()}`,
-        'Content-Type': get(config, 'headers.Content-Type', 'application/json'),
+        Authorization: `${getToken()}`,
       },
       timeout: 5000,
       baseURL: import.meta.env.VITE_BASE_API,
