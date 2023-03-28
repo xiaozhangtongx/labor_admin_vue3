@@ -1,5 +1,5 @@
 export interface IMenuResponseData {
-  children?: IMenuResponseData[]
+  children: IMenuResponseData[]
   component: Promise<any>
   id: string
   menuIcon?: string

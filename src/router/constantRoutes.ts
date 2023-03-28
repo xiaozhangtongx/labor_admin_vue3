@@ -1,9 +1,10 @@
+// @unocss-include
 import { type RouteRecordRaw } from 'vue-router'
 
 const Layout = () => import('@/layout/index.vue')
+const unoCssIcons = ['i-gg-menu-round', 'i-fluent-people-team-24-filled', 'i-material-symbols-person-search-outline', 'i-eos-icons-role-binding-outlined']
 
 /** 常驻路由 */
-// @unocss-include
 export const constantRoutes: RouteRecordRaw[] = [
   {
     path: '/redirect',
