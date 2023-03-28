@@ -2,8 +2,13 @@ import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import { type RouteRecordRaw } from 'vue-router'
 import store from '@/store'
-import { asyncRoutes, constantRoutes } from '@/router'
+import { constantRoutes } from '@/router/constantRoutes'
 import asyncRouteSettings from '@/config/async-route'
+import { getUserNavApi } from '@/api/menu'
+import type { IMenuResponseData } from '@/api/menu/types/menu'
+
+const modules = import.meta.glob('../../views/**/*.vue')
+const layout = import.meta.glob('../../layout/*.vue')
 
 const hasPermission = (roles: string[], route: RouteRecordRaw) => {
   if (route.meta && route.meta.roles) {
@@ -17,6 +22,36 @@ const hasPermission = (roles: string[], route: RouteRecordRaw) => {
   else {
     return true
   }
+}
+const menuChildren2Route = (menu: IMenuResponseData): RouteRecordRaw => {
+  const url = `../../views/${menu.component}/index.vue`
+  const route = {
+    path: menu.menuPath,
+    name: menu.menuName,
+    meta: {
+      title: menu.menuTitle,
+      // @unocss-include
+      svgIcon: menu.menuIcon,
+      roles: menu.menuPerms.split(','),
+    },
+    component: modules[url],
+  }
+
+  if (menu.children)
+    Object.assign(route, route, { redirect: `/${menu.menuPath}/${menu.children[0].menuPath}`, children: menu.children?.map(child => menuChildren2Route(child)) })
+
+  return route
+}
+
+const menu2Route = (menu: IMenuResponseData): RouteRecordRaw => {
+  const route = {
+    path: menu.menuPath,
+    component: layout['../../layout/index.vue'],
+    redirect: `${menu.menuPath}/index`,
+    children: menu.children?.map(child => menuChildren2Route(child)),
+  }
+
+  return route
 }
 
 const filterAsyncRoutes = (routes: RouteRecordRaw[], roles: string[]) => {
@@ -37,7 +72,10 @@ export const usePermissionStore = defineStore('permission', () => {
   const routes = ref<RouteRecordRaw[]>([])
   const dynamicRoutes = ref<RouteRecordRaw[]>([])
 
-  const setRoutes = (roles: string[]) => {
+  const setRoutes = async (roles: string[]) => {
+    const { data: asyncRoutesMenu } = await getUserNavApi()
+    const asyncRoutes = asyncRoutesMenu.map((menu: IMenuResponseData): RouteRecordRaw => menu2Route(menu))
+
     let accessedRoutes
     if (!asyncRouteSettings.open)
       accessedRoutes = asyncRoutes
@@ -45,7 +83,9 @@ export const usePermissionStore = defineStore('permission', () => {
       accessedRoutes = filterAsyncRoutes(asyncRoutes, roles)
 
     routes.value = constantRoutes.concat(accessedRoutes)
+
     dynamicRoutes.value = accessedRoutes
+    return accessedRoutes
   }
 
   return { routes, dynamicRoutes, setRoutes }

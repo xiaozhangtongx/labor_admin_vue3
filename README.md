@@ -13,20 +13,12 @@ pnpm dev
 ## ✔️ 预览
 
 ```bash
-# 预览预发布环境
-pnpm preview:stage
-
-# 预览正式环境
 pnpm preview:prod
 ```
 
-## 📦️ 多环境打包
+## 📦️打包
 
 ```bash
-# 构建预发布环境
-pnpm build:stage
-
-# 构建正式环境
 pnpm build:prod
 ```
 

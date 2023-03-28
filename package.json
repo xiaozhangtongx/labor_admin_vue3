@@ -1,5 +1,5 @@
 {
-  "name": "劳务实名管理系统",
+  "name": "labor admin",
   "version": "1.0",
   "description": "劳务实名管理系统",
   "author": {
@@ -15,9 +15,7 @@
   ],
   "scripts": {
     "dev": "vite",
-    "build:stage": "vue-tsc --noEmit && vite build --mode staging",
     "build:prod": "vue-tsc --noEmit && vite build",
-    "preview:stage": "pnpm build:stage && vite preview",
     "preview:prod": "pnpm build:prod && vite preview",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
