@@ -7,7 +7,8 @@ import store from '@/store'
 import { getToken, removeToken, setToken } from '@/utils/cache/cookies'
 import router, { resetRouter } from '@/router'
 import { getUserInfoApi, loginApi } from '@/api/login'
-import type { IApiUserInfoData, ILoginRequestData } from '@/api/login/types/login'
+import { type ILoginRequestData } from '@/api/login/types/login'
+import { type IApiUserInfoData } from '@/api/user/types/user'
 import asyncRouteSettings from '@/config/async-route'
 
 export const useUserStore = defineStore('user', () => {
