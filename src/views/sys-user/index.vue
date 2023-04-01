@@ -213,8 +213,10 @@ const xFormOpt = reactive<VxeFormProps>({
   titleColon: false,
   /** 表单数据 */
   data: {
+    id: '',
     username: '',
     password: '',
+    roleList: [],
   },
   /** 项列表 */
   items: [
@@ -236,12 +238,11 @@ const xFormOpt = reactive<VxeFormProps>({
     {
       field: 'avatar',
       title: '头像链接',
-      itemRender: { name: '$input', props: { placeholder: '请输入头像' } },
+      itemRender: { name: '$input', props: { placeholder: '请输入头像链接' } },
     },
     {
       field: 'roles',
       title: '角色',
-      itemRender: { name: '$input', props: { placeholder: '请选择角色' } },
       slots: { default: 'role_item' },
     },
     {
@@ -420,28 +421,34 @@ const crudStore = reactive({
     <vxe-modal ref="xModalDom" v-bind="xModalOpt">
       <!-- 表单 -->
       <vxe-form ref="xFormDom" v-bind="xFormOpt">
-        <vxe-form ref="xFormDom" v-bind="xFormOpt">
-          <template #role_item="{ data }">
-            <el-select
-              v-model="data.userArr"
-              value-key="userId"
-              remote-show-suffix
-              multiple
-              filterable
-              remote
-              clearable
-              reserve-keyword
-              placeholder="请输入角色名"
-              :remote-method="getRoleTableApi"
-              :loading="loading"
-            >
-              <el-option v-for="item in roleList" :key="item.roleId" :label="item.roleName" :value="item.value" />
-            </el-select>
-          </template>
-        </vxe-form>
+        <template #role_item="{ data }">
+          <el-select
+            v-model="data.roleList"
+            value-key="id"
+            remote-show-suffix
+            multiple
+            filterable
+            remote
+            clearable
+            reserve-keyword
+            placeholder="请输入角色名"
+            :remote-method="getRoleTableApi"
+            :loading="loading"
+          >
+            <el-option v-for="item in roleList" :key="item.roleId" :label="item.roleName" :value="item.value" />
+          </el-select>
+        </template>
       </vxe-form>
     </vxe-modal>
   </div>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.el-select-dropdown .el-popper .detailDialog_select-popper.is-multiple {
+  z-index: 10035 !important;
+}
+
+.vxe-modal--wrapper {
+  z-index: 1005 !important;
+}
+</style>
