@@ -13,7 +13,11 @@ export interface IGetRoleTableRequestData {
   roleName?: string
 }
 
-export type GetRuleTableResponseData = IApiResponseData<{
+export type GetRoleTableResponseData = IApiResponseData<{
   records: IApiRoleInfoData[]
   total: number
 }>
+
+export interface IGetRoleListRequestData {
+  roleName?: string
+}

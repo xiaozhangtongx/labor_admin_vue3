@@ -1,3 +1,4 @@
+import type { IApiRoleInfoData } from '@/api/role/types/role'
 export interface IApiUserInfoData {
   id: string
   username: string
@@ -6,7 +7,7 @@ export interface IApiUserInfoData {
   avatar: string
   status: number
   score?: number
-  roles: []
+  roles: IApiRoleInfoData[]
   _VXE_ID?: string
 }
 

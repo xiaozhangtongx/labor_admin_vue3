@@ -8,3 +8,11 @@ export function getUserNavApi() {
     method: 'get',
   })
 }
+
+/** 获取树形状列表 */
+export function getMenuTree() {
+  return request<any>({
+    url: 'sys-menu/tree',
+    method: 'get',
+  })
+}

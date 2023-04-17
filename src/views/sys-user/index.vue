@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { nextTick, reactive, ref } from 'vue'
+import { nextTick, onMounted, reactive, ref } from 'vue'
 import { ElMessage, ElMessageBox, type ElMessageBoxOptions } from 'element-plus'
 import {
   type VxeFormDefines,
@@ -14,38 +14,42 @@ import {
 import RoleColumnSolts from './tsx/RoleColumnSolts'
 import StatusColumnSolts from './tsx/StatusColumnSolts'
 import AvatarColumnSolts from './tsx/AvatarColumnSolts'
-import { deleteUserApi, getUserTableApi } from '@/api/user/index'
+import { addUserApi, deleteUserApi, getUserTableApi } from '@/api/user/index'
 import type { GetTableResponseData, IApiUserInfoData } from '@/api/user/types/user'
-import { getRoleTableApi } from '@/api/role/index'
-import { type IApiRoleInfoData, type IGetRoleTableRequestData } from '@/api/role/types/role'
+import { getRoleListApi } from '@/api/role/index'
+import { type IGetRoleListRequestData } from '@/api/role/types/role'
 
 interface IRoleItem {
-  roleId: string
+  id: string
   roleName: string
-  value: IApiRoleInfoData
 }
 
 defineOptions({
   name: 'VxeTable',
 })
 
-const roleList = ref<IRoleItem[]>([])
+const roleLists = ref<IRoleItem[]>()
+
 const loading = ref(false)
+const dialogTableVisible = ref(false)
+const roleForm = reactive({
+  roleList: [] as String[],
+})
 
 const getRoleList = async (query: string) => {
   loading.value = true
-  const params: IGetRoleTableRequestData = {
+  const params: IGetRoleListRequestData = {
     roleName: query,
-    current: 1,
-    size: 50,
   }
-  const { data: userList } = await getRoleTableApi(params)
+  const { data: roleList } = await getRoleListApi(params)
   loading.value = false
-  roleList.value = userList.records.map((item) => {
-    return { roleId: item.id, roleName: item.roleName, value: item }
-  })
+  roleLists.value = [...roleList]
 }
-getRoleList('')
+
+onMounted(() => {
+  getRoleList('')
+})
+
 const xGridDom = ref<VxeGridInstance>()
 const xFormDom = ref<VxeFormInstance>()
 const xModalDom = ref<VxeModalInstance>()
@@ -120,9 +124,16 @@ const xGridOpt: VxeGridProps = reactive({
   },
   /** 列配置 */
   columns: [
+
     {
       type: 'checkbox',
       width: '50px',
+    },
+    {
+      field: 'avatar',
+      title: '头像',
+      width: '80px',
+      slots: AvatarColumnSolts,
     },
     {
       field: 'username',
@@ -138,18 +149,18 @@ const xGridOpt: VxeGridProps = reactive({
       title: '手机号',
     },
     {
-      field: 'avatar',
-      title: '头像',
-      slots: AvatarColumnSolts,
+      field: 'createTime',
+      title: '创建时间',
     },
     {
       field: 'status',
+      width: '80px',
       title: '状态',
       slots: StatusColumnSolts,
     },
     {
       title: '操作',
-      width: '150px',
+      width: '200px',
       fixed: 'right',
       showOverflow: false,
       slots: { default: 'row-operate' },
@@ -180,7 +191,6 @@ const xGridOpt: VxeGridProps = reactive({
               // 总数
               if (Number.isInteger(resData.total))
                 total = resData.total
-
               // 分页数据
               if (Array.isArray(resData.records))
                 result = resData.records
@@ -215,8 +225,9 @@ const xFormOpt = reactive<VxeFormProps>({
   data: {
     id: '',
     username: '',
+    phoneNum: '',
     password: '',
-    roleList: [],
+    avatar: '',
   },
   /** 项列表 */
   items: [
@@ -241,11 +252,6 @@ const xFormOpt = reactive<VxeFormProps>({
       itemRender: { name: '$input', props: { placeholder: '请输入头像链接' } },
     },
     {
-      field: 'roles',
-      title: '角色',
-      slots: { default: 'role_item' },
-    },
-    {
       align: 'right',
       itemRender: {
         name: '$buttons',
@@ -266,7 +272,19 @@ const xFormOpt = reactive<VxeFormProps>({
         required: true,
         validator: ({ itemValue }) => {
           if (!itemValue)
-            return new Error('请输入')
+            return new Error('请输入用户名')
+
+          if (!itemValue.trim())
+            return new Error('空格无效')
+        },
+      },
+    ],
+    phoneNum: [
+      {
+        required: true,
+        validator: ({ itemValue }) => {
+          if (!itemValue)
+            return new Error('请输入手机号码')
 
           if (!itemValue.trim())
             return new Error('空格无效')
@@ -278,7 +296,7 @@ const xFormOpt = reactive<VxeFormProps>({
         required: true,
         validator: ({ itemValue }) => {
           if (!itemValue)
-            return new Error('请输入')
+            return new Error('请输入密码')
 
           if (!itemValue.trim())
             return new Error('空格无效')
@@ -302,16 +320,19 @@ const crudStore = reactive({
       xModalOpt.title = '修改用户'
       // 赋值
       xFormOpt.data.username = row.username
+      xFormOpt.data.phoneNum = row.phoneNum
+      xFormOpt.data.avatar = row.avatar
     }
     else {
       crudStore.isUpdate = false
       xModalOpt.title = '新增用户'
     }
     // 禁用表单项
-
     if (xFormOpt.items) {
       if (xFormOpt.items[0]?.itemRender?.props)
         xFormOpt.items[0].itemRender.props.disabled = crudStore.isUpdate
+      if (xFormOpt.items[2]?.itemRender?.props)
+        xFormOpt.items[2].itemRender.props.disabled = crudStore.isUpdate
     }
     xModalDom.value?.open()
     nextTick(() => {
@@ -329,7 +350,7 @@ const crudStore = reactive({
       xFormOpt.loading = true
       const callback = (err?: any) => {
         xFormOpt.loading = false
-        if (err)
+        if (err.code !== 200)
           return
         xModalDom.value?.close()
         ElMessage.success('操作成功')
@@ -342,8 +363,11 @@ const crudStore = reactive({
       }
       else {
         // 调用新增接口
-        setTimeout(() => callback(), 1000)
+        addUserApi(xFormOpt.data)
+          .then(res => callback(res))
+          .catch(err => callback(err))
       }
+      xFormOpt.data = {}
     })
   },
   /** 新增后是否跳入最后一页 */
@@ -355,11 +379,12 @@ const crudStore = reactive({
         ++pager.currentPage
     }
   },
+
   /** 删除 */
   onDelete: (row: IApiUserInfoData) => {
     const tip = `确定 <strong style='color:red;'>删除</strong> 用户 <strong style='color:#409eff;'>${row.username}</strong> ？`
     const config: ElMessageBoxOptions = {
-      type: 'warning',
+      type: 'error',
       showClose: true,
       closeOnClickModal: true,
       closeOnPressEscape: true,
@@ -379,6 +404,40 @@ const crudStore = reactive({
       })
       .catch(() => 1)
   },
+
+  // 重置密码
+  onResetPass: (row: IApiUserInfoData) => {
+    const tip = `确定 <strong style='color:red;'>重置</strong> 用户 <strong style='color:#409eff;'>${row.username}</strong> 的密码？`
+    const config: ElMessageBoxOptions = {
+      type: 'warning',
+      showClose: true,
+      closeOnClickModal: true,
+      closeOnPressEscape: true,
+      cancelButtonText: '取消',
+      confirmButtonText: '确定',
+      dangerouslyUseHTMLString: true,
+    }
+    ElMessageBox.confirm(tip, '提示', config)
+      .then(() => {
+        deleteUserApi(row.id)
+          .then(() => {
+            ElMessage.success('密码重置成功')
+            crudStore.afterDelete()
+            crudStore.commitQuery()
+          })
+          .catch(() => 1)
+      })
+      .catch(() => 1)
+  },
+
+  // 设置角色
+  onSetRole: (row: IApiUserInfoData) => {
+    dialogTableVisible.value = true
+    roleForm.roleList = row.roles.map(role =>
+      role.roleName,
+    )
+  },
+
   /** 删除后是否返回上一页 */
   afterDelete: () => {
     const tableData: IApiUserInfoData[] = xGridDom.value!.getData()
@@ -409,10 +468,13 @@ const crudStore = reactive({
         <el-button link type="primary" @click="crudStore.onShowModal(row)">
           <span class="i-ph-pencil-line-light mr-1" />  修改
         </el-button>
+        <el-button link type="info" @click="crudStore.onSetRole(row)">
+          <span class="i-carbon-user-role mr-1" />  分配角色
+        </el-button>
         <el-button link type="danger" @click="crudStore.onDelete(row)">
           <span class="i-material-symbols-delete-outline-rounded mr-1" /> 注销
         </el-button>
-        <el-button link type="warning" @click="crudStore.onDelete(row)">
+        <el-button link type="warning" @click="crudStore.onResetPass(row)">
           <span class="i-material-symbols-lock-reset mr-1" />  重置密码
         </el-button>
       </template>
@@ -420,35 +482,30 @@ const crudStore = reactive({
     <!-- 弹窗 -->
     <vxe-modal ref="xModalDom" v-bind="xModalOpt">
       <!-- 表单 -->
-      <vxe-form ref="xFormDom" v-bind="xFormOpt">
-        <template #role_item="{ data }">
-          <el-select
-            v-model="data.roleList"
-            value-key="id"
-            remote-show-suffix
-            multiple
-            filterable
-            remote
-            clearable
-            reserve-keyword
-            placeholder="请输入角色名"
-            :remote-method="getRoleTableApi"
-            :loading="loading"
-          >
-            <el-option v-for="item in roleList" :key="item.roleId" :label="item.roleName" :value="item.value" />
-          </el-select>
-        </template>
-      </vxe-form>
+      <vxe-form ref="xFormDom" v-bind="xFormOpt" />
     </vxe-modal>
+
+    <!-- 分配角色对话框 -->
+    <el-dialog v-model="dialogTableVisible" title="分配角色" width="600px">
+      <el-form :model="roleForm">
+        <el-form-item>
+          <el-checkbox-group v-model="roleForm.roleList">
+            <el-checkbox v-for="role in roleLists" :key="role.id" :label="role.roleName" />
+          </el-checkbox-group>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary">
+            确定
+          </el-button>
+          <el-button @click="dialogTableVisible = false">
+            取消
+          </el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
 <style lang="scss" scoped>
-.el-select-dropdown .el-popper .detailDialog_select-popper.is-multiple {
-  z-index: 10035 !important;
-}
 
-.vxe-modal--wrapper {
-  z-index: 1005 !important;
-}
 </style>
