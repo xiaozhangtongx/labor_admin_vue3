@@ -30,7 +30,6 @@ const menuChildren2Route = (menu: IMenuResponseData): RouteRecordRaw => {
     name: menu.menuName,
     meta: {
       title: menu.menuTitle,
-      // @unocss-include
       svgIcon: menu.menuIcon,
       roles: menu.menuPerms.split(','),
     },
@@ -48,6 +47,11 @@ const menu2Route = (menu: IMenuResponseData): RouteRecordRaw => {
     path: menu.menuPath,
     component: layout['../../layout/index.vue'],
     redirect: `${menu.menuPath}/index`,
+    meta: {
+      title: menu.menuTitle,
+      svgIcon: menu.menuIcon,
+      roles: menu.menuPerms.split(','),
+    },
     children: menu.children?.map(child => menuChildren2Route(child)),
   }
 
