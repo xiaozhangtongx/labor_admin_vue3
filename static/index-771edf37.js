@@ -1,1 +1,0 @@
-import{_ as e}from"./_plugin-vue_export-helper-1b428a4d.js";import{e as r,f as n}from"./index-3b6e6a2e.js";const o=e({},[["render",function(e,o){return r(),n("div",null," 菜单管理 ")}]]);export{o as default};
