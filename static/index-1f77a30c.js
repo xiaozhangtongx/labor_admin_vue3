@@ -1,1 +1,0 @@
-import{e,I as r,c as t}from"./index-f280b6a0.js";import{E as o}from"./el-empty-c1a0759f.js";import{_ as s}from"./_plugin-vue_export-helper-1b428a4d.js";import"./index-64956b2b.js";const n={class:"app-container center"};const p=s({},[["render",function(s,p){const i=o;return t(),e("div",n,[r(i,{description:"Editor 权限可见"})])}],["__scopeId","data-v-f3d24ef0"]]);export{p as default};
