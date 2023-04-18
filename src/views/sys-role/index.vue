@@ -423,7 +423,6 @@ const crudStore = reactive({
     </vxe-modal>
 
     <!-- 分配权限对话框 -->
-
     <el-dialog v-model="dialogTableVisible" title="分配权限" width="600px">
       <el-form :model="menuForm">
         <el-form-item v-model="menuForm.menuList">
