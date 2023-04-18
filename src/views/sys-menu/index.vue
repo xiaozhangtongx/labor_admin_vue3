@@ -1,11 +1,14 @@
 <script lang="ts" setup>
-import { onMounted, reactive, ref } from 'vue'
-import { ElMessage } from 'element-plus'
+import { nextTick, onMounted, reactive, ref } from 'vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import type { FormInstance, FormRules } from 'element-plus'
 import { getMenuTree } from '@/api/menu/index'
 
+const loading = ref<boolean>(false)
 const ruleFormRef = ref<FormInstance>()
 const dialogVisible = ref(false)
+const isExpandAll = ref(true)
+const treeTable = ref(true)
 const tableData = ref<any>(null)
 const editForm = reactive({
   menuTitle: '',
@@ -18,11 +21,18 @@ const editForm = reactive({
   orderNum: '',
   parentId: '',
 })
-const visible = ref(false)
 
 const getMenuTrees = async () => {
+  loading.value = true
   const { data: menuTree } = await getMenuTree()
   tableData.value = [...menuTree]
+  loading.value = false
+}
+const changeExpand = async () => {
+  treeTable.value = false
+  isExpandAll.value = !isExpandAll.value
+  await nextTick()
+  treeTable.value = true
 }
 
 onMounted(() => {
@@ -45,7 +55,7 @@ const editFormRules = reactive<FormRules>({
   orderNum: [
     { required: true, message: '请填入排序号', trigger: 'blur' },
   ],
-  statu: [
+  status: [
     { required: true, message: '请选择状态', trigger: 'blur' },
   ],
 })
@@ -83,22 +93,27 @@ const resetForm = (formEl: FormInstance | undefined) => {
 </script>
 
 <template>
-  <div class="app-container bg-white m-5">
+  <div v-loading="loading" class="app-container bg-white m-5">
     <el-form :inline="true">
       <el-form-item>
         <vxe-button status="primary" icon="vxe-icon-add" @click="dialogVisible = true">
           新增菜单
         </vxe-button>
+        <vxe-button status="warning" @click="changeExpand">
+          {{ isExpandAll ? "关闭所有" : "展开所有" }}
+        </vxe-button>
       </el-form-item>
     </el-form>
 
     <el-table
+      v-if="treeTable"
       :data="tableData"
       style="width: 100%;margin-bottom: 20px;"
       row-key="id"
       border
       stripe
-      default-expand-all
+      lazy
+      :default-expand-all="isExpandAll"
       :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
     >
       <el-table-column
@@ -260,5 +275,10 @@ const resetForm = (formEl: FormInstance | undefined) => {
 </template>
 
 <style lang="scss" scoped>
-
+.search-wrapper {
+  margin-bottom: 20px;
+  :deep(.el-card__body) {
+    padding-bottom: 2px;
+  }
+}
 </style>
