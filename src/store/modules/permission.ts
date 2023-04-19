@@ -37,7 +37,7 @@ const menuChildren2Route = (menu: IMenuResponseData): RouteRecordRaw => {
   }
 
   if (menu.children)
-    Object.assign(route, route, { redirect: `/${menu.menuPath}/${menu.children[0].menuPath}`, children: menu.children?.map(child => menuChildren2Route(child)) })
+    Object.assign(route, route, { redirect: `${menu.redirect}`, children: menu.children?.map(child => menuChildren2Route(child)) })
 
   return route
 }
@@ -46,7 +46,7 @@ const menu2Route = (menu: IMenuResponseData): RouteRecordRaw => {
   const route = {
     path: menu.menuPath,
     component: layout['../../layout/index.vue'],
-    redirect: `${menu.menuPath}/index`,
+    redirect: `${menu.redirect}`,
     meta: {
       title: menu.menuTitle,
       svgIcon: menu.menuIcon,

@@ -9,6 +9,7 @@ export interface IMenuResponseData {
   orderNum: number
   parentId: string
   menuTitle: string
+  redirect?: string
 }
 
 export type UserNavResponseData = IApiResponseData<IMenuResponseData[]>
