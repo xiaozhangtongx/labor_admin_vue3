@@ -1,0 +1,1 @@
+import{e,I as r,c as s}from"./index-bc1c3e74.js";import{E as t}from"./el-empty-4069b022.js";import{_ as o}from"./_plugin-vue_export-helper-1b428a4d.js";import"./index-e082803b.js";const n={class:"app-container center"};const p=o({},[["render",function(o,p){const a=t;return s(),e("div",n,[r(a,{description:"Admin 权限可见"})])}],["__scopeId","data-v-5a78679f"]]);export{p as default};
