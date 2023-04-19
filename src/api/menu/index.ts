@@ -16,3 +16,29 @@ export function getMenuTree() {
     method: 'get',
   })
 }
+
+/** 添加菜单 */
+export function addMenuApi(data: Menu.IMenuRequestData) {
+  return request({
+    url: 'sys-menu/add',
+    method: 'post',
+    data,
+  })
+}
+
+/** 更新菜单信息 */
+export function updateMenuInfoApi(data: Menu.IMenuRequestData) {
+  return request({
+    url: 'sys-menu/update',
+    method: 'put',
+    data,
+  })
+}
+
+/** 删除菜单 */
+export function deleteMenuApi(menuId: string) {
+  return request({
+    url: `sys-menu/delete/${menuId}`,
+    method: 'delete',
+  })
+}
