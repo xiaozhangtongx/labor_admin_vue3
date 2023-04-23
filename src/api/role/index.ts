@@ -44,3 +44,12 @@ export function updateRoleApi(data: Role.IApiRoleInfoData) {
     data,
   })
 }
+
+/** 配置权限 */
+export function updatePerm(roleId: string, menuIds: String[]) {
+  return request({
+    url: `sys-role/perm/${roleId}`,
+    method: 'post',
+    data: menuIds,
+  })
+}

@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { nextTick, onMounted, reactive, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { ElTree } from 'element-plus'
 import { ElMessage, ElMessageBox, type ElMessageBoxOptions } from 'element-plus'
 import {
@@ -12,9 +13,11 @@ import {
   type VxeModalInstance,
   type VxeModalProps,
 } from 'vxe-table'
-import { addRoleApi, deleteRoleApi, getRoleTableApi, updateRoleApi } from '@/api/role/index'
+import { addRoleApi, deleteRoleApi, getRoleTableApi, updatePerm, updateRoleApi } from '@/api/role/index'
 import { type GetRoleTableResponseData, type IApiRoleInfoData } from '@/api/role/types/role'
 import { getMenuTree } from '@/api/menu/index'
+
+const router = useRouter()
 
 interface IMenuItem {
   id: string
@@ -32,7 +35,8 @@ const defaultProps = {
 }
 const permTreeData = ref<IMenuItem[]>()
 const menuForm = reactive({
-  menuList: [] as String[],
+  menuIds: [] as any[],
+  roleId: '',
 })
 const treeRef = ref<InstanceType<typeof ElTree>>()
 
@@ -42,6 +46,33 @@ const getMenuTrees = async () => {
   const { data: menuTree } = await getMenuTree()
   loading.value = false
   permTreeData.value = [...menuTree]
+}
+
+const submitPermFormHandle = () => {
+  const menuArr = treeRef.value!.getCheckedNodes(false)
+  const menuNodeIds = [] as String[]
+
+  menuArr.forEach((menu) => {
+    menuNodeIds.push(menu.id)
+    menuNodeIds.push(menu.parentId)
+  })
+
+  const menuIds = [...new Set(menuNodeIds)].filter(menuId => menuId !== '0')
+
+  updatePerm(menuForm.roleId, menuIds).then((res: any) => {
+    ElMessage.success(res.msg)
+  }).catch((err: any) => {
+    ElMessage.error(err.msg)
+  }).finally(() => {
+    router.go(0)
+    treeRef.value!.setCheckedKeys([], false)
+    dialogTableVisible.value = false
+  })
+}
+
+const cancelPermFormHandle = () => {
+  treeRef.value!.setCheckedKeys([], false)
+  dialogTableVisible.value = false
 }
 
 onMounted(() => {
@@ -375,6 +406,12 @@ const crudStore = reactive({
   },
 
   onSetPermission: (row: IApiRoleInfoData) => {
+    menuForm.roleId = row.id
+    menuForm.menuIds = []
+    row.menus.forEach((menu) => {
+      if (menu.parentId !== '0')
+        menuForm.menuIds.push(menu.id)
+    })
     dialogTableVisible.value = true
   },
 
@@ -425,22 +462,23 @@ const crudStore = reactive({
     <!-- 分配权限对话框 -->
     <el-dialog v-model="dialogTableVisible" title="分配权限" width="600px">
       <el-form :model="menuForm">
-        <el-form-item v-model="menuForm.menuList">
+        <el-form-item v-model="menuForm.menuIds">
           <ElTree
             ref="treeRef"
             :data="permTreeData"
             show-checkbox
-            :default-expand-all="true"
+            default-expand-all
             node-key="id"
-            :check-strictly="true"
+            :highlight-current="true"
+            :default-checked-keys="menuForm.menuIds"
             :props="defaultProps"
           />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary">
+          <el-button type="primary" @click="submitPermFormHandle()">
             确定
           </el-button>
-          <el-button @click="dialogTableVisible = false">
+          <el-button @click="cancelPermFormHandle()">
             取消
           </el-button>
         </el-form-item>

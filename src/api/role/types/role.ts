@@ -3,7 +3,7 @@ export interface IApiRoleInfoData {
   roleName: string
   roleCode: string
   des?: string
-  menus?: []
+  menus: any[]
   _VXE_ID?: string
 }
 
