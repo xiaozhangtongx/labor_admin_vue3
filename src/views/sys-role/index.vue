@@ -13,7 +13,7 @@ import {
   type VxeModalInstance,
   type VxeModalProps,
 } from 'vxe-table'
-import { addRoleApi, deleteRoleApi, getRoleTableApi, updatePerm, updateRoleApi } from '@/api/role/index'
+import { addRoleApi, deleteRoleApi, deleteRolesApi, getRoleTableApi, updatePerm, updateRoleApi } from '@/api/role/index'
 import { type GetRoleTableResponseData, type IApiRoleInfoData } from '@/api/role/types/role'
 import { getMenuTree } from '@/api/menu/index'
 
@@ -422,8 +422,33 @@ const crudStore = reactive({
     if (pager && pager.currentPage > 1 && tableData.length === 1)
       --pager.currentPage
   },
-  /** 更多自定义方法 */
-  moreFunc: () => {},
+
+  /** 批量删除 */
+  onDeleteRoles: () => {
+    const tip = '确定 <strong style=\'color:red;\'>删除</strong> 这些角色吗？'
+    const config: ElMessageBoxOptions = {
+      type: 'warning',
+      showClose: true,
+      closeOnClickModal: true,
+      closeOnPressEscape: true,
+      cancelButtonText: '取消',
+      confirmButtonText: '确定',
+      dangerouslyUseHTMLString: true,
+    }
+    ElMessageBox.confirm(tip, '提示', config)
+      .then(() => {
+        const selectRoleArr = xGridDom.value?.getCheckboxRecords().map(role => role.id) as string[]
+        deleteRolesApi(selectRoleArr).then((res: any) => {
+          ElMessage.success(res.msg)
+        }).catch((err: any) => {
+          ElMessage.error(err.msg)
+        }).finally(() => {
+          crudStore.afterDelete()
+          crudStore.commitQuery()
+        })
+      })
+      .catch(() => 1)
+  },
 })
 </script>
 
@@ -436,7 +461,7 @@ const crudStore = reactive({
         <vxe-button status="primary" icon="vxe-icon-add" @click="crudStore.onShowModal()">
           新增角色
         </vxe-button>
-        <vxe-button status="danger" icon="vxe-icon-delete">
+        <vxe-button status="danger" icon="vxe-icon-delete" @click="crudStore.onDeleteRoles()">
           批量删除
         </vxe-button>
       </template>

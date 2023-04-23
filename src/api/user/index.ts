@@ -11,11 +11,11 @@ export function getUserTableApi(params: User.IGetUserTableRequestData) {
 }
 
 /** 批量删除用户 */
-export function deleteUsersApi(data: string[]) {
+export function deleteUsersApi(ids: string[]) {
   return request({
     url: 'sys-user/delete',
     method: 'post',
-    data,
+    data: ids,
   })
 }
 
@@ -42,5 +42,14 @@ export function addUserApi(data: User.IApiUserInfoData) {
     url: 'sys-user/add',
     method: 'post',
     data,
+  })
+}
+
+/** 配置角色 */
+export function updateUserRoleApi(userId: string, roleIds: String[]) {
+  return request({
+    url: `sys-user/role/${userId}`,
+    method: 'post',
+    data: roleIds,
   })
 }

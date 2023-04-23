@@ -11,13 +11,15 @@ import {
   type VxeModalInstance,
   type VxeModalProps,
 } from 'vxe-table'
+import { useRouter } from 'vue-router'
 import RoleColumnSolts from './tsx/RoleColumnSolts'
 import StatusColumnSolts from './tsx/StatusColumnSolts'
 import AvatarColumnSolts from './tsx/AvatarColumnSolts'
-import { addUserApi, deleteUserApi, getUserTableApi } from '@/api/user/index'
+import { addUserApi, deleteUserApi, deleteUsersApi, getUserTableApi, updateUserInfoApi, updateUserRoleApi } from '@/api/user/index'
 import type { GetTableResponseData, IApiUserInfoData } from '@/api/user/types/user'
 import { getRoleListApi } from '@/api/role/index'
 import { type IGetRoleListRequestData } from '@/api/role/types/role'
+import { isPhoneNumber } from '@/utils/validate'
 
 interface IRoleItem {
   id: string
@@ -29,11 +31,13 @@ defineOptions({
 })
 
 const roleLists = ref<IRoleItem[]>()
+const router = useRouter()
 
 const loading = ref(false)
 const dialogTableVisible = ref(false)
 const roleForm = reactive({
   roleList: [] as String[],
+  userId: '',
 })
 
 const getRoleList = async (query: string) => {
@@ -44,6 +48,17 @@ const getRoleList = async (query: string) => {
   const { data: roleList } = await getRoleListApi(params)
   loading.value = false
   roleLists.value = [...roleList]
+}
+
+const onSubmit = () => {
+  updateUserRoleApi(roleForm.userId, roleForm.roleList).then((res: any) => {
+    ElMessage.success(res.msg)
+  }).catch((err: any) => {
+    ElMessage.error(err.msg)
+  }).finally(() => {
+    router.go(0)
+    dialogTableVisible.value = false
+  })
 }
 
 onMounted(() => {
@@ -244,7 +259,8 @@ const xFormOpt = reactive<VxeFormProps>({
     {
       field: 'password',
       title: '密码',
-      itemRender: { name: '$input', props: { placeholder: '请输入密码' } },
+      slots: { default: 'password_item' },
+      // itemRender: { name: '$input', props: { placeholder: '请输入密码' } },
     },
     {
       field: 'avatar',
@@ -283,8 +299,8 @@ const xFormOpt = reactive<VxeFormProps>({
       {
         required: true,
         validator: ({ itemValue }) => {
-          if (!itemValue)
-            return new Error('请输入手机号码')
+          if (!isPhoneNumber(itemValue))
+            return new Error('请输入正确的手机号码')
 
           if (!itemValue.trim())
             return new Error('空格无效')
@@ -319,9 +335,11 @@ const crudStore = reactive({
       crudStore.isUpdate = true
       xModalOpt.title = '修改用户'
       // 赋值
+      xFormOpt.data.id = row.id
       xFormOpt.data.username = row.username
       xFormOpt.data.phoneNum = row.phoneNum
       xFormOpt.data.avatar = row.avatar
+      xFormOpt.data.password = '傻子别看了，没有密码的'
     }
     else {
       crudStore.isUpdate = false
@@ -359,7 +377,9 @@ const crudStore = reactive({
       }
       if (crudStore.isUpdate) {
         // 调用修改接口
-        setTimeout(() => callback(), 1000)
+        updateUserInfoApi(xFormOpt.data)
+          .then(res => callback(res))
+          .catch(err => callback(err))
       }
       else {
         // 调用新增接口
@@ -433,9 +453,37 @@ const crudStore = reactive({
   // 设置角色
   onSetRole: (row: IApiUserInfoData) => {
     dialogTableVisible.value = true
+    roleForm.userId = row.id
     roleForm.roleList = row.roles.map(role =>
-      role.roleName,
+      role.id,
     )
+  },
+
+  /** 批量删除 */
+  onDeleteUsers: () => {
+    const tip = '确定 <strong style=\'color:red;\'>删除</strong> 这些用户吗？'
+    const config: ElMessageBoxOptions = {
+      type: 'warning',
+      showClose: true,
+      closeOnClickModal: true,
+      closeOnPressEscape: true,
+      cancelButtonText: '取消',
+      confirmButtonText: '确定',
+      dangerouslyUseHTMLString: true,
+    }
+    ElMessageBox.confirm(tip, '提示', config)
+      .then(() => {
+        const selectUserArr = xGridDom.value?.getCheckboxRecords().map(user => user.id) as string[]
+        deleteUsersApi(selectUserArr).then((res: any) => {
+          ElMessage.success(res.msg)
+        }).catch((err: any) => {
+          ElMessage.error(err.msg)
+        }).finally(() => {
+          crudStore.afterDelete()
+          crudStore.commitQuery()
+        })
+      })
+      .catch(() => 1)
   },
 
   /** 删除后是否返回上一页 */
@@ -459,7 +507,7 @@ const crudStore = reactive({
         <vxe-button status="primary" icon="vxe-icon-add" @click="crudStore.onShowModal()">
           新增用户
         </vxe-button>
-        <vxe-button status="danger" icon="vxe-icon-delete">
+        <vxe-button status="danger" icon="vxe-icon-delete" @click="crudStore.onDeleteUsers()">
           批量删除
         </vxe-button>
       </template>
@@ -482,7 +530,19 @@ const crudStore = reactive({
     <!-- 弹窗 -->
     <vxe-modal ref="xModalDom" v-bind="xModalOpt">
       <!-- 表单 -->
-      <vxe-form ref="xFormDom" v-bind="xFormOpt" />
+      <vxe-form ref="xFormDom" v-bind="xFormOpt">
+        <!-- 合同日期 -->
+        <template #password_item>
+          <el-input
+            v-model.trim="xFormOpt.data.password"
+            placeholder="请输入密码"
+            type="password"
+            tabindex="2"
+            show-password
+            :disabled="crudStore.isUpdate"
+          />
+        </template>
+      </vxe-form>
     </vxe-modal>
 
     <!-- 分配角色对话框 -->
@@ -490,11 +550,13 @@ const crudStore = reactive({
       <el-form :model="roleForm">
         <el-form-item>
           <el-checkbox-group v-model="roleForm.roleList">
-            <el-checkbox v-for="role in roleLists" :key="role.id" :label="role.roleName" />
+            <el-checkbox v-for="role in roleLists" :key="role.id" :label="role.id">
+              {{ role.roleName }}
+            </el-checkbox>
           </el-checkbox-group>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary">
+          <el-button type="primary" @click="onSubmit">
             确定
           </el-button>
           <el-button @click="dialogTableVisible = false">

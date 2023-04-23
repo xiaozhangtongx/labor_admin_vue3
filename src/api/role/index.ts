@@ -53,3 +53,12 @@ export function updatePerm(roleId: string, menuIds: String[]) {
     data: menuIds,
   })
 }
+
+/** 批量删除角色 */
+export function deleteRolesApi(ids: string[]) {
+  return request({
+    url: 'sys-role/delete',
+    method: 'post',
+    data: ids,
+  })
+}
