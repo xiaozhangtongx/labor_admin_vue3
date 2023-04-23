@@ -1,8 +1,9 @@
 // @unocss-include
 import { type RouteRecordRaw } from 'vue-router'
+import { unoCssIcons } from '@/utils/unoCssIcons'
+const unoCssIcon = unoCssIcons
 
 const Layout = () => import('@/layout/index.vue')
-const unoCssIcons = ['i-gg-menu-round', 'i-fluent-people-team-24-filled', 'i-material-symbols-person-search-outline', 'i-eos-icons-role-binding-outlined', 'i-material-symbols-flowsheet-outline', 'i-ic-outline-leave-bags-at-home', 'i-material-symbols-more-time', 'i-material-symbols-free-cancellation-rounded', 'i-ci-timer-add']
 
 /** 常驻路由 */
 export const constantRoutes: RouteRecordRaw[] = [
