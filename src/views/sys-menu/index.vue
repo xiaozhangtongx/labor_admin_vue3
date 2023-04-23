@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { nextTick, onMounted, reactive, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import type { FormInstance, FormRules } from 'element-plus'
 import { addMenuApi, deleteMenuApi, getMenuTree, updateMenuInfoApi } from '@/api/menu/index'
@@ -27,6 +28,7 @@ const editForm = reactive<IMenuRequestData>({
   menuName: '',
 })
 
+const router = useRouter()
 const getMenuTrees = async () => {
   loading.value = true
   const { data: menuTree } = await getMenuTree()
@@ -90,6 +92,7 @@ const deleteHandle = (menuInfo: IMenuResponseData) => {
     type: 'warning',
   }).then(() => {
     deleteMenuApi(menuInfo.id).then((res: any) => ElMessage.success(res.msg)).catch((err: any) => ElMessage.error(err.msg)).finally(() => {
+      router.go(0)
       getMenuTrees()
     })
   })
@@ -115,6 +118,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
       else {
         updateMenuInfoApi(editForm).then((res: any) => {
           ElMessage.success(res.msg)
+          router.go(0)
           getMenuTrees()
         })
       }
