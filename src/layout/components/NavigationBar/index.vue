@@ -8,6 +8,7 @@ import { useSettingsStore } from '@/store/modules/settings'
 import { useUserStore } from '@/store/modules/user'
 import ThemeSwitch from '@/components/ThemeSwitch/index.vue'
 import Screenfull from '@/components/Screenfull/index.vue'
+import Setting from '@/components/Setting/index.vue'
 import Notify from '@/components/Notify/index.vue'
 
 const router = useRouter()
@@ -27,6 +28,9 @@ const showThemeSwitch = computed(() => {
 const showScreenfull = computed(() => {
   return settingsStore.showScreenfull
 })
+const showSettings = computed(() => {
+  return settingsStore.showSettings
+})
 
 const toggleSidebar = () => {
   appStore.toggleSidebar(false)
@@ -45,6 +49,7 @@ const logout = () => {
       <Screenfull v-if="showScreenfull" class="right-menu-item" />
       <ThemeSwitch v-if="showThemeSwitch" class="right-menu-item" />
       <Notify v-if="showNotify" class="right-menu-item" />
+      <Setting v-if="showSettings" class="right-menu-item" />
       <el-dropdown class="right-menu-item">
         <div class="right-menu-avatar">
           <el-avatar :src="userStore.userInfo?.avatar" :size="30" />
@@ -52,11 +57,11 @@ const logout = () => {
         </div>
         <template #dropdown>
           <el-dropdown-menu>
-            <a target="_blank" href="https://github.com/xiaozhangtongx/v3-admin-vite">
-              <el-dropdown-item>GitHub</el-dropdown-item>
+            <a target="_blank" href="https://github.com/xiaozhangtongx/labor_admin_vue3">
+              <el-dropdown-item><span class="i-mdi-github mr-1" /> GitHub</el-dropdown-item>
             </a>
             <el-dropdown-item divided @click="logout">
-              <span style="display: block">退出登录</span>
+              <span class="i-material-symbols-exit-to-app mr-1" /> <span style="display: block">退出登录</span>
             </el-dropdown-item>
           </el-dropdown-menu>
         </template>

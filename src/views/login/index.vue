@@ -148,6 +148,9 @@ createCode()
   align-items: center;
   width: 100%;
   min-height: 100%;
+  background-image: url("../../assets/login/bg.png");
+  background-repeat: no-repeat;
+  background-size: cover;
   .theme-switch {
     position: fixed;
     top: 5%;

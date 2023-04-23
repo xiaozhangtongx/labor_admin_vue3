@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
-import { AppMain, NavigationBar, RightPanel, Settings, Sidebar, TagsView } from './components'
+import { AppMain, NavigationBar, Sidebar, TagsView } from './components'
 import useResize from './hooks/useResize'
 import { DeviceType, useAppStore } from '@/store/modules/app'
 import { useSettingsStore } from '@/store/modules/settings'
@@ -10,10 +10,6 @@ const settingsStore = useSettingsStore()
 
 /** Layout 布局响应式 */
 useResize()
-
-const showSettings = computed(() => {
-  return settingsStore.showSettings
-})
 const showTagsView = computed(() => {
   return settingsStore.showTagsView
 })
@@ -52,9 +48,6 @@ const classObj = computed(() => {
         <TagsView v-if="showTagsView" />
       </div>
       <AppMain />
-      <RightPanel v-if="showSettings">
-        <Settings />
-      </RightPanel>
     </div>
   </div>
 </template>
