@@ -11,13 +11,7 @@ import MyStatus from '@/components/MyStatus/index.vue'
 import { useUserStore } from '@/store/modules/user'
 
 const user = useUserStore()
-const leaveStatusList = [
-  { id: 0, type: '', value: '病假' },
-  { id: 1, type: 'success', value: '婚假' },
-  { id: 2, type: 'info', value: '丧假' },
-  { id: 3, type: 'warning', value: '产假' },
-  { id: 4, type: 'danger', value: '其它' },
-]
+
 const resStatusList = [
   { id: 0, type: 'success', value: '同意' },
   { id: 1, type: 'danger', value: '拒绝' },
@@ -50,12 +44,6 @@ const xGridOpt: VxeGridProps = reactive({
   pagerConfig: {
     align: 'right',
   },
-  /** 工具栏配置 */
-  toolbarConfig: {
-    refresh: true,
-    custom: true,
-    zoom: true,
-  },
 
   /** 列配置 */
   columns: [
@@ -65,13 +53,8 @@ const xGridOpt: VxeGridProps = reactive({
       title: '序号',
     },
     {
-      field: 'flowLeaveInfo.proposer.username',
+      field: 'flowWorkTimeInfo.proposer.username',
       title: '申请人',
-    },
-    {
-      field: 'applicationType',
-      title: '申请类型',
-      slots: { default: 'application-type' },
     },
     {
       field: 'approvalResult',
@@ -79,7 +62,15 @@ const xGridOpt: VxeGridProps = reactive({
       slots: { default: 'approval-result' },
     },
     {
-      field: 'flowLeaveInfo.createTime',
+      field: 'flowWorkTimeInfo.workDate',
+      title: '申请补充日期',
+    },
+    {
+      field: 'flowWorkTimeInfo.workDuration',
+      title: '申请时长',
+    },
+    {
+      field: 'flowWorkTimeInfo.createTime',
       title: '申请时间',
     },
     {
@@ -128,7 +119,7 @@ const xGridOpt: VxeGridProps = reactive({
           const params = {
             approverId: user.userInfo?.id,
             status: 0,
-            applicationType: '0',
+            applicationType: '3',
             size: page.pageSize,
             current: page.currentPage,
           }
@@ -145,10 +136,6 @@ const xGridOpt: VxeGridProps = reactive({
   <div>
     <!-- 表格 -->
     <vxe-grid ref="xGridDom" v-bind="xGridOpt">
-      <!-- 请假类型 -->
-      <template #application-type="{ row }">
-        <MyStatus :status="parseInt(row.applicationType) " :status-list="leaveStatusList" />
-      </template>
       <!-- 审批结果 -->
       <template #approval-result="{ row }">
         <MyStatus :status="parseInt(row.approvalResult) " :status-list="resStatusList" />
@@ -173,10 +160,10 @@ const xGridOpt: VxeGridProps = reactive({
         <div class="flow-leave">
           <el-descriptions title="申请人信息" :column="2" label-align="right">
             <el-descriptions-item label="姓名">
-              {{ sysFlowInfo.flowLeaveInfo.proposer.username }}
+              {{ sysFlowInfo.flowWorkTimeInfo.proposer.username }}
             </el-descriptions-item>
             <el-descriptions-item label="手机号码">
-              {{ sysFlowInfo.flowLeaveInfo.proposer.phoneNum }}
+              {{ sysFlowInfo.flowWorkTimeInfo.proposer.phoneNum }}
             </el-descriptions-item>
             <el-descriptions-item label="部门">
               Suzhou
@@ -187,22 +174,16 @@ const xGridOpt: VxeGridProps = reactive({
               </el-tag>
             </el-descriptions-item>
           </el-descriptions>
-          <el-descriptions title="申请表单" :column="2" border>
-            <el-descriptions-item label="申请时间">
-              {{ sysFlowInfo.flowLeaveInfo.createTime }}
-            </el-descriptions-item>
-            <el-descriptions-item label="请假时长">
-              {{ sysFlowInfo.flowLeaveInfo.duration }} 天
-            </el-descriptions-item>
-            <el-descriptions-item label="请假开始时间">
-              {{ sysFlowInfo.flowLeaveInfo.startTime }}
-            </el-descriptions-item>
-            <el-descriptions-item label="请假结束时间">
-              {{ sysFlowInfo.flowLeaveInfo.endTime }}
-            </el-descriptions-item>
 
+          <el-descriptions title="申请表单" :column="2" border>
+            <el-descriptions-item label="补充日期">
+              {{ sysFlowInfo.flowWorkTimeInfo.workDate }}
+            </el-descriptions-item>
+            <el-descriptions-item label="申请时长">
+              {{ sysFlowInfo.flowWorkTimeInfo.workDuration }} 小时
+            </el-descriptions-item>
             <el-descriptions-item label="申请原因">
-              {{ sysFlowInfo.flowLeaveInfo.reason }}
+              {{ sysFlowInfo.flowWorkTimeInfo.reason }}
             </el-descriptions-item>
           </el-descriptions>
 
