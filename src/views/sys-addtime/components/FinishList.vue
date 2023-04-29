@@ -50,6 +50,12 @@ const xGridOpt: VxeGridProps = reactive({
   pagerConfig: {
     align: 'right',
   },
+  /** 工具栏配置 */
+  toolbarConfig: {
+    refresh: true,
+    custom: true,
+    zoom: true,
+  },
 
   /** 列配置 */
   columns: [

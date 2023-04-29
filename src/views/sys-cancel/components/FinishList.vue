@@ -59,12 +59,12 @@ const xGridOpt: VxeGridProps = reactive({
       title: '序号',
     },
     {
-      field: 'flowLeaveInfo.proposer.username',
+      field: 'flowCancelInfo.leaveInfo.proposer.username',
       title: '申请人',
     },
     {
       field: 'applicationType',
-      title: '申请类型',
+      title: '申请销假类型',
       slots: { default: 'application-type' },
     },
     {
@@ -73,7 +73,7 @@ const xGridOpt: VxeGridProps = reactive({
       slots: { default: 'approval-result' },
     },
     {
-      field: 'flowLeaveInfo.createTime',
+      field: 'flowCancelInfo.createTime',
       title: '申请时间',
     },
     {
@@ -122,7 +122,7 @@ const xGridOpt: VxeGridProps = reactive({
           const params = {
             approverId: user.userInfo?.id,
             status: 0,
-            applicationType: '0',
+            applicationType: '1',
             size: page.pageSize,
             current: page.currentPage,
           }
@@ -167,10 +167,10 @@ const xGridOpt: VxeGridProps = reactive({
         <div class="flow-leave">
           <el-descriptions title="申请人信息" :column="2" label-align="right">
             <el-descriptions-item label="姓名">
-              {{ sysFlowInfo.flowLeaveInfo.proposer.username }}
+              {{ sysFlowInfo.flowCancelInfo.leaveInfo.proposer.username }}
             </el-descriptions-item>
             <el-descriptions-item label="手机号码">
-              {{ sysFlowInfo.flowLeaveInfo.proposer.phoneNum }}
+              {{ sysFlowInfo.flowCancelInfo.leaveInfo.proposer.phoneNum }}
             </el-descriptions-item>
             <el-descriptions-item label="部门">
               Suzhou
@@ -181,22 +181,35 @@ const xGridOpt: VxeGridProps = reactive({
               </el-tag>
             </el-descriptions-item>
           </el-descriptions>
-          <el-descriptions title="申请表单" :column="2" border>
+
+          <el-descriptions title="请假表单" :column="2" border>
             <el-descriptions-item label="申请时间">
-              {{ sysFlowInfo.flowLeaveInfo.createTime }}
+              {{ sysFlowInfo.flowCancelInfo.leaveInfo.createTime }}
             </el-descriptions-item>
             <el-descriptions-item label="请假时长">
-              {{ sysFlowInfo.flowLeaveInfo.duration }} 天
+              {{ sysFlowInfo.flowCancelInfo.leaveInfo.duration }} 天
             </el-descriptions-item>
             <el-descriptions-item label="请假开始时间">
-              {{ sysFlowInfo.flowLeaveInfo.startTime }}
+              {{ sysFlowInfo.flowCancelInfo.leaveInfo.startTime }}
             </el-descriptions-item>
             <el-descriptions-item label="请假结束时间">
-              {{ sysFlowInfo.flowLeaveInfo.endTime }}
+              {{ sysFlowInfo.flowCancelInfo.leaveInfo.endTime }}
             </el-descriptions-item>
 
+            <el-descriptions-item label="请假原因">
+              {{ sysFlowInfo.flowCancelInfo.leaveInfo.reason }}
+            </el-descriptions-item>
+          </el-descriptions>
+
+          <el-descriptions title="销假表单" :column="2" border class="mt-2">
+            <el-descriptions-item label="申请时间">
+              {{ sysFlowInfo.flowCancelInfo.createTime }}
+            </el-descriptions-item>
+            <el-descriptions-item label="更新时间">
+              {{ sysFlowInfo.flowCancelInfo.updateTime || sysFlowInfo.flowCancelInfo.createTime }}
+            </el-descriptions-item>
             <el-descriptions-item label="申请原因">
-              {{ sysFlowInfo.flowLeaveInfo.reason }}
+              {{ sysFlowInfo.flowCancelInfo.leaveInfo.reason }}
             </el-descriptions-item>
           </el-descriptions>
 
