@@ -17,17 +17,15 @@ const user = useUserStore()
 
 const formRef = ref<FormInstance>()
 const statusList = [
-  { id: 0, type: '', value: '病假' },
-  { id: 1, type: 'success', value: '婚假' },
-  { id: 2, type: 'info', value: '丧假' },
-  { id: 3, type: 'warning', value: '产假' },
-  { id: 4, type: 'danger', value: '其它' },
+  { id: 0, type: '', value: '工作日加班' },
+  { id: 1, type: 'success', value: '休息日加班' },
+  { id: 2, type: 'danger', value: '法定节假日加班' },
 ]
 
 const fromParm = reactive<IGetApprovalTableRequestData>({
   approverId: user.userInfo?.id,
   status: 1,
-  applicationType: '0',
+  applicationType: '2',
   current: 0,
   size: 5,
 })
@@ -38,43 +36,43 @@ const sysFlowApproval = reactive<ISetApprovalRequestData>({
   approverId: user.userInfo?.id || '',
   approvalResult: 0,
   reason: '',
-  applicationType: '0',
+  applicationType: '2',
 })
 
-const sysFlowLeaveList = ref<any[]>([])
+const sysFlowOverTimeList = ref<any[]>([])
 const sysFlowInfo = ref<any>()
 const loading = ref<boolean>(true)
 const isFinish = ref<boolean>(false)
 const active = ref<string>('')
 const isApproval = ref<boolean>(false)
 
-// TODO: 获取要审批的请假列表
-const getFlowLeaveList = () => {
+// TODO: 获取要审批的加班列表
+const getFlowOverTimeList = () => {
   loading.value = true
   getApprovalTableApi(fromParm).then((res) => {
-    const arr3 = [...sysFlowLeaveList.value, ...res.data.records]
-    sysFlowLeaveList.value = [...uniqueFun(arr3)]
-    sysFlowInfo.value = sysFlowLeaveList.value[0]
+    const arr3 = [...sysFlowOverTimeList.value, ...res.data.records]
+    sysFlowOverTimeList.value = [...uniqueFun(arr3)]
+    sysFlowInfo.value = sysFlowOverTimeList.value[0]
     active.value = sysFlowInfo.value?.id || ''
     loading.value = false
     fromParm.current += fromParm.size
-    if (res.data.total >= sysFlowLeaveList.value.length)
+    if (res.data.total >= sysFlowOverTimeList.value.length)
       isFinish.value = true
   })
 }
 
 // TODO: 上滑刷新
 const load = () => {
-  getFlowLeaveList()
+  getFlowOverTimeList()
 }
 
 // TODO: 获取要审批列表的信息
-const getFlowInfo = (sysFlowLeave: any) => {
-  sysFlowInfo.value = sysFlowLeave
+const getFlowInfo = (sysFlowOverTime: any) => {
+  sysFlowInfo.value = sysFlowOverTime
   loading.value = false
-  active.value = sysFlowLeave.id
-  sysFlowApproval.applicationId = sysFlowLeave.applicationId
-  sysFlowApproval.id = sysFlowLeave.id
+  active.value = sysFlowOverTime.id
+  sysFlowApproval.applicationId = sysFlowOverTime.applicationId
+  sysFlowApproval.id = sysFlowOverTime.id
 }
 
 // TODO: 审批通过
@@ -126,11 +124,11 @@ const onAppoveFail = (formEl: FormInstance | undefined) => {
 }
 
 const removeItem = (id: String) => {
-  sysFlowLeaveList.value = sysFlowLeaveList.value.filter(item => item.id !== id)
+  sysFlowOverTimeList.value = sysFlowOverTimeList.value.filter(item => item.id !== id)
 }
 
 onMounted(() => {
-  getFlowLeaveList()
+  getFlowOverTimeList()
 })
 </script>
 
@@ -140,23 +138,23 @@ onMounted(() => {
       <el-tabs v-model="activeName" class="demo-tabs">
         <el-tab-pane label="待审批" name="todo">
           <div v-if="activeName === 'todo'" v-loading="loading">
-            <el-empty v-if="sysFlowLeaveList.length === 0" :image-size="200" class="h-120" description="你已经全部审批完了" />
+            <el-empty v-if="sysFlowOverTimeList.length === 0" :image-size="200" class="h-120" description="你已经全部审批完了" />
             <div v-else class="common-layout">
               <el-container>
                 <el-aside>
                   <el-scrollbar height="480px">
                     <div v-infinite-scroll="load" :infinite-scroll-immediate="false" class="infinite-list">
                       <el-card
-                        v-for="sysFlowLeave in sysFlowLeaveList" :key="sysFlowLeave.id" shadow="hover"
-                        :class="{ activeCard: active === sysFlowLeave.id }" class="infinite-list-item  cursor-pointer "
-                        @click="getFlowInfo(sysFlowLeave)"
+                        v-for="sysFlowOverTime in sysFlowOverTimeList" :key="sysFlowOverTime.id" shadow="hover"
+                        :class="{ activeCard: active === sysFlowOverTime.id }" class="infinite-list-item  cursor-pointer "
+                        @click="getFlowInfo(sysFlowOverTime)"
                       >
                         <h4>
-                          <MyStatus :status="parseInt(sysFlowLeave.applicationType)" :status-list="statusList" />
+                          <MyStatus :status="parseInt(sysFlowOverTime.applicationType)" :status-list="statusList" />
                         </h4>
                         <h5 class="flex justify-between w-60 text-gray-500">
-                          <span>{{ sysFlowLeave.flowLeaveInfo.proposer.username
-                          }}</span><span>{{ sysFlowLeave.approvalTime }}</span>
+                          <span>{{ sysFlowOverTime.flowOverTimeInfo.proposer.username
+                          }}</span><span>{{ sysFlowOverTime.flowOverTimeInfo.createTime }}</span>
                         </h5>
                       </el-card>
                       <el-divider v-if="isFinish" border-style="dashed">
@@ -176,10 +174,10 @@ onMounted(() => {
                         </h2>
                         <el-descriptions v-loading="loading" title="申请人信息" :column="2" label-align="right">
                           <el-descriptions-item label="姓名">
-                            {{ sysFlowInfo.flowLeaveInfo.proposer.username }}
+                            {{ sysFlowInfo.flowOverTimeInfo.proposer.username }}
                           </el-descriptions-item>
                           <el-descriptions-item label="手机号码">
-                            {{ sysFlowInfo.flowLeaveInfo.proposer.phoneNum }}
+                            {{ sysFlowInfo.flowOverTimeInfo.proposer.phoneNum }}
                           </el-descriptions-item>
                           <el-descriptions-item label="部门">
                             Suzhou
@@ -192,20 +190,20 @@ onMounted(() => {
                         </el-descriptions>
                         <el-descriptions title="申请表单" :column="2" border>
                           <el-descriptions-item label="申请时间">
-                            {{ sysFlowInfo.flowLeaveInfo.createTime }}
+                            {{ sysFlowInfo.flowOverTimeInfo.createTime }}
                           </el-descriptions-item>
-                          <el-descriptions-item label="请假时长">
-                            {{ sysFlowInfo.flowLeaveInfo.duration }} 天
+                          <el-descriptions-item label="加班时长">
+                            {{ sysFlowInfo.flowOverTimeInfo.duration }} 小时
                           </el-descriptions-item>
-                          <el-descriptions-item label="请假开始时间">
-                            {{ sysFlowInfo.flowLeaveInfo.startTime }}
+                          <el-descriptions-item label="加班开始时间">
+                            {{ sysFlowInfo.flowOverTimeInfo.startTime }}
                           </el-descriptions-item>
-                          <el-descriptions-item label="请假结束时间">
-                            {{ sysFlowInfo.flowLeaveInfo.endTime }}
+                          <el-descriptions-item label="加班结束时间">
+                            {{ sysFlowInfo.flowOverTimeInfo.endTime }}
                           </el-descriptions-item>
 
                           <el-descriptions-item label="申请原因">
-                            {{ sysFlowInfo.flowLeaveInfo.reason }}
+                            {{ sysFlowInfo.flowOverTimeInfo.reason }}
                           </el-descriptions-item>
                         </el-descriptions>
                         <h4 class="mt-2">
@@ -296,7 +294,7 @@ onMounted(() => {
   background: #fff;
 
   &:hover {
-    background: #ECF5FF;
+    background: #fff0eb;
   }
 }
 
@@ -313,6 +311,6 @@ onMounted(() => {
 }
 
 .activeCard {
-  background: #ECF5FF !important;
+  background: #fff0eb !important;
 }
 </style>

@@ -12,11 +12,9 @@ import { useUserStore } from '@/store/modules/user'
 
 const user = useUserStore()
 const leaveStatusList = [
-  { id: 0, type: '', value: '病假' },
-  { id: 1, type: 'success', value: '婚假' },
-  { id: 2, type: 'info', value: '丧假' },
-  { id: 3, type: 'warning', value: '产假' },
-  { id: 4, type: 'danger', value: '其它' },
+  { id: 0, type: '', value: '工作日加班' },
+  { id: 1, type: 'success', value: '休息日加班' },
+  { id: 2, type: 'danger', value: '法定节假日加班' },
 ]
 const resStatusList = [
   { id: 0, type: 'success', value: '同意' },
@@ -50,12 +48,6 @@ const xGridOpt: VxeGridProps = reactive({
   pagerConfig: {
     align: 'right',
   },
-  /** 工具栏配置 */
-  toolbarConfig: {
-    refresh: true,
-    custom: true,
-    zoom: true,
-  },
 
   /** 列配置 */
   columns: [
@@ -65,7 +57,7 @@ const xGridOpt: VxeGridProps = reactive({
       title: '序号',
     },
     {
-      field: 'flowLeaveInfo.proposer.username',
+      field: 'flowOverTimeInfo.proposer.username',
       title: '申请人',
     },
     {
@@ -79,7 +71,7 @@ const xGridOpt: VxeGridProps = reactive({
       slots: { default: 'approval-result' },
     },
     {
-      field: 'flowLeaveInfo.createTime',
+      field: 'flowOverTimeInfo.createTime',
       title: '申请时间',
     },
     {
@@ -128,7 +120,7 @@ const xGridOpt: VxeGridProps = reactive({
           const params = {
             approverId: user.userInfo?.id,
             status: 0,
-            applicationType: '0',
+            applicationType: '2',
             size: page.pageSize,
             current: page.currentPage,
           }
@@ -145,7 +137,7 @@ const xGridOpt: VxeGridProps = reactive({
   <div>
     <!-- 表格 -->
     <vxe-grid ref="xGridDom" v-bind="xGridOpt">
-      <!-- 请假类型 -->
+      <!-- 加班类型 -->
       <template #application-type="{ row }">
         <MyStatus :status="parseInt(row.applicationType) " :status-list="leaveStatusList" />
       </template>
@@ -173,10 +165,10 @@ const xGridOpt: VxeGridProps = reactive({
         <div class="flow-leave">
           <el-descriptions title="申请人信息" :column="2" label-align="right">
             <el-descriptions-item label="姓名">
-              {{ sysFlowInfo.flowLeaveInfo.proposer.username }}
+              {{ sysFlowInfo.flowOverTimeInfo.proposer.username }}
             </el-descriptions-item>
             <el-descriptions-item label="手机号码">
-              {{ sysFlowInfo.flowLeaveInfo.proposer.phoneNum }}
+              {{ sysFlowInfo.flowOverTimeInfo.proposer.phoneNum }}
             </el-descriptions-item>
             <el-descriptions-item label="部门">
               Suzhou
@@ -189,20 +181,20 @@ const xGridOpt: VxeGridProps = reactive({
           </el-descriptions>
           <el-descriptions title="申请表单" :column="2" border>
             <el-descriptions-item label="申请时间">
-              {{ sysFlowInfo.flowLeaveInfo.createTime }}
+              {{ sysFlowInfo.flowOverTimeInfo.createTime }}
             </el-descriptions-item>
-            <el-descriptions-item label="请假时长">
-              {{ sysFlowInfo.flowLeaveInfo.duration }} 天
+            <el-descriptions-item label="加班时长">
+              {{ sysFlowInfo.flowOverTimeInfo.duration }} 小时
             </el-descriptions-item>
-            <el-descriptions-item label="请假开始时间">
-              {{ sysFlowInfo.flowLeaveInfo.startTime }}
+            <el-descriptions-item label="加班开始时间">
+              {{ sysFlowInfo.flowOverTimeInfo.startTime }}
             </el-descriptions-item>
-            <el-descriptions-item label="请假结束时间">
-              {{ sysFlowInfo.flowLeaveInfo.endTime }}
+            <el-descriptions-item label="加班结束时间">
+              {{ sysFlowInfo.flowOverTimeInfo.endTime }}
             </el-descriptions-item>
 
             <el-descriptions-item label="申请原因">
-              {{ sysFlowInfo.flowLeaveInfo.reason }}
+              {{ sysFlowInfo.flowOverTimeInfo.reason }}
             </el-descriptions-item>
           </el-descriptions>
 
