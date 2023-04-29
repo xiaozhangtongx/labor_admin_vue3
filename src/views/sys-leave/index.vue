@@ -156,7 +156,7 @@ onMounted(() => {
                         </h4>
                         <h5 class="flex justify-between w-60 text-gray-500">
                           <span>{{ sysFlowLeave.flowLeaveInfo.proposer.username
-                          }}</span><span>{{ sysFlowLeave.approvalTime }}</span>
+                          }}</span><span>{{ sysFlowLeave.flowLeaveInfo.createTime }}</span>
                         </h5>
                       </el-card>
                       <el-divider v-if="isFinish" border-style="dashed">
