@@ -10,4 +10,5 @@ export const unoCssIcons = [
   'i-material-symbols-free-cancellation-rounded',
   'i-ci-timer-add',
   'i-icon-park-outline-system',
+  'i-material-symbols-event-available-outline-rounded',
 ]

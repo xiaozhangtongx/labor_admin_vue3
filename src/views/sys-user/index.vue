@@ -531,7 +531,7 @@ const crudStore = reactive({
     <vxe-modal ref="xModalDom" v-bind="xModalOpt">
       <!-- 表单 -->
       <vxe-form ref="xFormDom" v-bind="xFormOpt">
-        <!-- 合同日期 -->
+        <!-- 用户密码 -->
         <template #password_item>
           <el-input
             v-model.trim="xFormOpt.data.password"
