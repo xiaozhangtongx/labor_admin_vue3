@@ -1,12 +1,14 @@
 <script lang="ts" setup>
-import { reactive, ref } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import type { FormInstance, FormRules } from 'element-plus'
 import { useDateFormat } from '@vueuse/core'
+import { useRoute } from 'vue-router'
 import type { IApiQuestionInfoData } from '@/api/question/types/question'
 import { getUuid } from '@/utils/utils'
-import { addQuestionApi } from '@/api/question/index'
+import { addQuestionApi, getQuestionInfoApi } from '@/api/question/index'
 
+const router = useRoute()
 const formSize = ref('default')
 const singleChoiceFormRef = ref<FormInstance>()
 const dialogTableVisible = ref<boolean>(false)
@@ -74,6 +76,12 @@ const rules = reactive<FormRules>({
   ],
 })
 
+// TODO: 初始化表单
+const initFormData = () => {
+  if (router.query.id !== '')
+    getQuestionInfoApi(router.query.id as string).then((res: any) => Object.assign(singleChoiceForm, res.data))
+}
+
 // TODO: 提交表单
 const submitForm = async (formEl: FormInstance | undefined) => {
   if (!formEl)
@@ -100,6 +108,11 @@ const resetForm = (formEl: FormInstance | undefined) => {
     return
   formEl.resetFields()
 }
+
+// TODO: 初始化
+onMounted(() => {
+  initFormData()
+})
 </script>
 
 <template>

@@ -18,3 +18,11 @@ export function addQuestionApi(data: Question.IApiQuestionInfoData) {
     data,
   })
 }
+
+/** 获取题目信息 */
+export function getQuestionInfoApi(id: string | null) {
+  return request({
+    url: `sys-question/info/${id}`,
+    method: 'get',
+  })
+}

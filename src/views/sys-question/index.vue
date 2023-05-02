@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { reactive, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import {
   type VxeGridInstance,
   type VxeGridPropTypes,
@@ -13,6 +14,7 @@ defineOptions({
   name: 'VxeTable',
 })
 
+const router = useRouter()
 const dialogTableVisible = ref(false)
 const typeValue = ref(null)
 const typeList = [
@@ -21,9 +23,20 @@ const typeList = [
 ]
 const questionInfo = ref<IApiQuestionInfoData>()
 
+// TODO: 展示题目预览
 const onShowDialog = (row?: IApiQuestionInfoData) => {
   dialogTableVisible.value = true
   questionInfo.value = row
+}
+
+// TODO: 编辑题目
+const onEditQuestion = (row?: IApiQuestionInfoData) => {
+  router.push({
+    path: row?.type === 0 ? '/sys-question/edit/trueFalse' : '/sys-question/edit/singleChoice',
+    query: {
+      id: row?.id,
+    },
+  })
 }
 
 const xGridDom = ref<VxeGridInstance>()
@@ -156,7 +169,7 @@ const xGridOpt: VxeGridProps = reactive({
 
           /** 接口需要的参数 */
           const params: IGetQuestionTableRequestData = {
-            title: form.questionId || '',
+            title: form.title || '',
             type: typeValue.value || '',
             tag: form.tag || '',
             size: page.pageSize,
@@ -196,7 +209,7 @@ const xGridOpt: VxeGridProps = reactive({
         <el-button link type="primary" @click="onShowDialog(row)">
           <span class="i-carbon-task-view mr-1" />  预览题目
         </el-button>
-        <el-button link type="danger" @click="onShowDialog(row)">
+        <el-button link type="danger" @click="onEditQuestion(row)">
           <span class="i-ph-pencil-line-light mr-1" />  编辑题目
         </el-button>
       </template>
