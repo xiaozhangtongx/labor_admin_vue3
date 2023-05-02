@@ -11,4 +11,7 @@ export const unoCssIcons = [
   'i-ci-timer-add',
   'i-icon-park-outline-system',
   'i-material-symbols-event-available-outline-rounded',
+  'i-fluent-book-question-mark-24-filled',
+  'i-healthicons-i-exam-multiple-choice',
+  'i-material-symbols-radio-button-checked-outline',
 ]
