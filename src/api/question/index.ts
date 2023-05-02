@@ -9,3 +9,12 @@ export function getQuestionTableApi(params: Question.IGetQuestionTableRequestDat
     params,
   })
 }
+
+/** 新建题目 */
+export function addQuestionApi(data: Question.IApiQuestionInfoData) {
+  return request({
+    url: 'sys-question/add',
+    method: 'post',
+    data,
+  })
+}

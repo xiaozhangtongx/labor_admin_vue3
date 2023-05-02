@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { onMounted, reactive, ref } from 'vue'
-import type { FormInstance } from 'element-plus'
+import { ElMessage, type FormInstance } from 'element-plus'
 import FinishList from './components/FinishList.vue'
 import { getApprovalTableApi, setApprovalApi } from '@/api/approval/index'
 import { type IGetApprovalTableRequestData, type ISetApprovalRequestData } from '@/api/approval/types/approval'

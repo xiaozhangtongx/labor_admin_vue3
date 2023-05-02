@@ -38,6 +38,7 @@
     "path-to-regexp": "^6.2.1",
     "pinia": "^2.0.33",
     "screenfull": "^6.0.2",
+    "uuid": "^9.0.0",
     "vue": "^3.2.47",
     "vue-router": "^4.1.6",
     "vxe-table": "^4.3.10",

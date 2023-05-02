@@ -156,7 +156,7 @@ const xGridOpt: VxeGridProps = reactive({
 
           /** 接口需要的参数 */
           const params: IGetQuestionTableRequestData = {
-            title: form.title || '',
+            title: form.questionId || '',
             type: typeValue.value || '',
             tag: form.tag || '',
             size: page.pageSize,
@@ -202,7 +202,7 @@ const xGridOpt: VxeGridProps = reactive({
       </template>
     </vxe-grid>
 
-    <!-- 考勤数据详情对话框 -->
+    <!-- 试题详情对话框 -->
     <el-dialog v-model="dialogTableVisible" destroy-on-close width="370px" title="题目预览">
       <h3><strong>题目：</strong> {{ questionInfo?.title }}</h3>
       <p v-for="questionItem in questionInfo?.sysQuestionItemList" :key="questionItem.id" class="m-0">

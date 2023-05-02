@@ -4,7 +4,7 @@ export interface QuestionItemInfoData {
   questionId: string
   des: string
   sort: string
-  createTime: Date
+  createTime: Date | string
   _VXE_ID?: string
 }
 
@@ -16,7 +16,7 @@ export interface IApiQuestionInfoData {
   answerId?: string
   sort: number
   tag: string
-  createTime: Date
+  createTime?: Date
   creator?: string
   answerContent: string
   sysQuestionItemList: QuestionItemInfoData[]
