@@ -1,0 +1,1 @@
+import{b5 as t}from"./index-767da184.js";function a(a){return t({url:"sys-flow/approval/list",method:"get",params:a})}function r(a){return t({url:"sys-flow/approval/update",method:"put",data:a})}export{a as g,r as s};
