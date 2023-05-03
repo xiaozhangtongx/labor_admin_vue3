@@ -1,0 +1,1 @@
+import{_ as r}from"./_plugin-vue_export-helper-1b428a4d.js";import{a as e,c as t}from"./index-e788a3f8.js";const n=r({},[["render",function(r,n){return e(),t("div",null," 小组管理 ")}]]);export{n as default};

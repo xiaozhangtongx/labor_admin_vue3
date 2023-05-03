@@ -1,0 +1,1 @@
+import{d as e,a as s,c as a,n}from"./index-e788a3f8.js";import{_ as r}from"./_plugin-vue_export-helper-1b428a4d.js";const t=r(e({__name:"index",props:{name:{type:String,required:!0}},setup(e){const r=e;return(e,t)=>(s(),a("section",{class:n([r.name,"svg-icon"])},null,2))}}),[["__scopeId","data-v-27bba21c"]]);export{t as _};

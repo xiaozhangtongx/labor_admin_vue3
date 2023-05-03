@@ -1,1 +1,0 @@
-import{bg as t}from"./index-442db11c.js";function s(s){return t({url:"sys-question/list",method:"get",params:s})}function n(s){return t({url:"sys-question/add",method:"post",data:s})}function o(s){return t({url:`sys-question/info/${s}`,method:"get"})}export{o as a,n as b,s as g};
