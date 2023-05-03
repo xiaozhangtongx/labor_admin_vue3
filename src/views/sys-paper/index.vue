@@ -8,7 +8,7 @@ import {
   type VxeGridProps,
 } from 'vxe-table'
 
-import { deleteExamInfoApi, getExamTableApi } from '@/api/exam/index'
+import { deleteExamInfoApi, getExamInfoApi, getExamTableApi } from '@/api/exam/index'
 import type { GetExamResponseData, IApiExamInfoData, IGetExamTableRequestData } from '@/api/exam/types/exam'
 
 defineOptions({
@@ -28,13 +28,15 @@ const examInfo = ref<IApiExamInfoData>()
 // TODO: 展示试卷预览
 const onShowDialog = (row?: IApiExamInfoData) => {
   dialogTableVisible.value = true
-  examInfo.value = row
+  getExamInfoApi(row?.id || null).then((res: any) => {
+    examInfo.value = res.data
+  })
 }
 
 // TODO: 编辑试卷
 const onEditExam = (row?: IApiExamInfoData) => {
   router.push({
-    path: '/sys-exam/edit',
+    path: '/sys-paper/edit',
     query: {
       id: row?.id,
     },
@@ -57,19 +59,11 @@ const onDelExam = (row: IApiExamInfoData) => {
       deleteExamInfoApi(row.id)
         .then(() => {
           ElMessage.success('删除成功')
-          afterDelete()
+          router.go(0)
         })
         .catch(() => 1)
     })
     .catch(() => 1)
-}
-
-/** 删除后是否返回上一页 */
-const afterDelete = () => {
-  const tableData: IApiExamInfoData[] = xGridDom.value!.getData()
-  const pager: VxeGridPropTypes.ProxyAjaxQueryPageParams = xGridDom.value?.getProxyInfo()?.pager
-  if (pager && pager.currentPage > 1 && tableData.length === 1)
-    --pager.currentPage
 }
 
 const xGridDom = ref<VxeGridInstance>()
@@ -249,6 +243,30 @@ const xGridOpt: VxeGridProps = reactive({
         </el-button>
       </template>
     </vxe-grid>
+
+    <!-- 预览弹窗 -->
+    <el-dialog v-model="dialogTableVisible" destroy-on-close width="70%" title="试卷预览">
+      <el-scrollbar height="400px">
+        <h1 class="text-center">
+          {{ examInfo?.title }}
+        </h1>
+        <h3 class="text-center">
+          <strong>注意事项：</strong>  {{ examInfo?.des }}
+        </h3>
+        <h3 class="text-center">
+          <strong>开始时间：</strong>  {{ examInfo?.startTime }}
+          <strong>结束时间：</strong>  {{ examInfo?.endTime }}
+        </h3>
+        <h4 v-for="(question, index) in examInfo?.questions" :key="question.id" class="m-0">
+          <h3><strong>题目{{ index + 1 }}：</strong> {{ question?.title }}</h3>
+          <p v-for="questionItem in question.sysQuestionItemList" :key="questionItem.id" class="m-0">
+            <el-radio :label="questionItem.id" size="large">
+              {{ questionItem.content }}
+            </el-radio>
+          </p>
+        </h4>
+      </el-scrollbar>
+    </el-dialog>
   </div>
 </template>
 

@@ -41,6 +41,7 @@ specifiers:
   vite: ^4.1.4
   vitest: ^0.29.3
   vue: ^3.2.47
+  vue-draggable-plus: ^0.1.3
   vue-router: ^4.1.6
   vue-tsc: ^1.2.0
   vxe-table: ^4.3.10
@@ -65,6 +66,7 @@ dependencies:
   screenfull: registry.npmmirror.com/screenfull/6.0.2
   uuid: registry.npmmirror.com/uuid/9.0.0
   vue: registry.npmmirror.com/vue/3.2.47
+  vue-draggable-plus: registry.npmmirror.com/vue-draggable-plus/0.1.3
   vue-router: registry.npmmirror.com/vue-router/4.1.6_vue@3.2.47
   vxe-table: registry.npmmirror.com/vxe-table/4.3.11_vue@3.2.47+xe-utils@3.5.7
   vxe-table-plugin-element: registry.npmmirror.com/vxe-table-plugin-element/3.0.6_vxe-table@4.3.11
@@ -6457,6 +6459,17 @@ packages:
         optional: true
     dependencies:
       vue: registry.npmmirror.com/vue/3.2.47
+
+  registry.npmmirror.com/vue-draggable-plus/0.1.3:
+    resolution: {integrity: sha512-YkbcwIcMAdELc/o4acHfgeTo7EO6waY8/QmHBZIkD4DfgqdCg218g0cisGcKi1Y6BlIXOqneGstH1h0I9H+pGg==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/vue-draggable-plus/-/vue-draggable-plus-0.1.3.tgz}
+    name: vue-draggable-plus
+    version: 0.1.3
+    peerDependencies:
+      '@vue/composition-api': '*'
+    peerDependenciesMeta:
+      '@vue/composition-api':
+        optional: true
+    dev: false
 
   registry.npmmirror.com/vue-eslint-parser/9.1.0_eslint@8.36.0:
     resolution: {integrity: sha512-NGn/iQy8/Wb7RrRa4aRkokyCZfOUWk19OP5HP6JEozQFX5AoS/t+Z0ZN7FY4LlmWc4FNI922V7cvX28zctN8dQ==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/vue-eslint-parser/-/vue-eslint-parser-9.1.0.tgz}

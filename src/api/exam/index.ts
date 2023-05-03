@@ -19,6 +19,15 @@ export function addExamApi(data: Exam.IApiExamInfoData) {
   })
 }
 
+/** 更新试卷 */
+export function editExamApi(data: Exam.IApiExamInfoData) {
+  return request({
+    url: 'sys-exam/update',
+    method: 'put',
+    data,
+  })
+}
+
 /** 获取试卷信息 */
 export function getExamInfoApi(id: string | null) {
   return request({
