@@ -14,4 +14,7 @@ export const unoCssIcons = [
   'i-fluent-book-question-mark-24-filled',
   'i-healthicons-i-exam-multiple-choice',
   'i-material-symbols-radio-button-checked-outline',
+  'i-healthicons-i-exam-qualification',
+  'i-mdi-file-document',
+  'i-mdi-file-document-edit',
 ]

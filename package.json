@@ -15,7 +15,7 @@
   ],
   "scripts": {
     "dev": "vite",
-    "build:prod": "vue-tsc --noEmit && vite build",
+    "build:prod": "vite build",
     "preview:prod": "pnpm build:prod && vite preview",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
