@@ -26,3 +26,12 @@ export function getQuestionInfoApi(id: string | null) {
     method: 'get',
   })
 }
+
+/** 获取题目信息 */
+export function editQuestionApi(data: Question.IApiQuestionInfoData) {
+  return request({
+    url: 'sys-question/update',
+    method: 'put',
+    data,
+  })
+}

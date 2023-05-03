@@ -6,7 +6,7 @@ import { useDateFormat } from '@vueuse/core'
 import { useRoute } from 'vue-router'
 import type { IApiQuestionInfoData } from '@/api/question/types/question'
 import { getUuid } from '@/utils/utils'
-import { addQuestionApi, getQuestionInfoApi } from '@/api/question/index'
+import { addQuestionApi, editQuestionApi, getQuestionInfoApi } from '@/api/question/index'
 
 const router = useRoute()
 const formSize = ref('default')
@@ -102,16 +102,27 @@ const initFormData = () => {
 const submitForm = async (formEl: FormInstance | undefined) => {
   if (!formEl)
     return
-  await formEl.validate((valid, fields) => {
+  await formEl.validate((valid) => {
     loading.value = true
     if (valid) {
-      addQuestionApi(singleChoiceForm)
-        .then((res: any) => ElMessage.success(res.msg))
-        .catch((err: any) => ElMessage.error(err.msg))
-        .finally(() => {
-          loading.value = false
-          singleChoiceFormRef.value!.resetFields()
-        })
+      if (router.query.id !== '') {
+        editQuestionApi(singleChoiceForm)
+          .then((res: any) => ElMessage.success(res.msg))
+          .catch((err: any) => ElMessage.error(err.msg))
+          .finally(() => {
+            loading.value = false
+            initFormData()
+          })
+      }
+      else {
+        addQuestionApi(singleChoiceForm)
+          .then((res: any) => ElMessage.success(res.msg))
+          .catch((err: any) => ElMessage.error(err.msg))
+          .finally(() => {
+            loading.value = false
+            singleChoiceFormRef.value!.resetFields()
+          })
+      }
     }
     else { ElMessage.error('提交失败，请把数据补充完整') }
     loading.value = false
@@ -130,7 +141,7 @@ const addQuestionItem = () => {
   const questionItem = {
     id: getUuid() as string,
     content: '',
-    questionId: uuid,
+    questionId: singleChoiceForm.id,
     sort: `${singleChoiceForm.sysQuestionItemList.length + 1}`,
     des: '',
     createTime,
