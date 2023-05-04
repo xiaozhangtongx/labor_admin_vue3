@@ -17,4 +17,6 @@ export const unoCssIcons = [
   'i-healthicons-i-exam-qualification',
   'i-mdi-file-document',
   'i-mdi-file-document-edit',
+  'i-mdi-bell-badge',
+  'i-mdi-bell-cog',
 ]

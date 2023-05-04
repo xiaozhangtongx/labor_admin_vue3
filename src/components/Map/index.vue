@@ -25,7 +25,7 @@ onMounted(() => {
     center.value = [props.lng, props.lat]
 
   AMapLoader.load({
-    key: 'c8f08427710f817dc4faa7f74e135987',
+    key: 'b8fdf4fcb8c3449e4d3ef4e1a0172552',
     version: '2.0',
     plugins: ['AMap.Geolocation', 'AMap.Geocoder'],
   }).then((AMap: any) => {
