@@ -78,7 +78,7 @@ const rules = reactive<FormRules>({
 
 // TODO: 初始化表单
 const initFormData = () => {
-  if (router.query.id !== '')
+  if (router.query.id !== undefined)
     getQuestionInfoApi(router.query.id as string).then((res: any) => Object.assign(singleChoiceForm, res.data))
 }
 
@@ -89,7 +89,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
   await formEl.validate((valid) => {
     loading.value = true
     if (valid) {
-      if (router.query.id !== '') {
+      if (router.query.id !== undefined) {
         editQuestionApi(singleChoiceForm)
           .then((res: any) => ElMessage.success(res.msg))
           .catch((err: any) => ElMessage.error(err.msg))

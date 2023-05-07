@@ -106,7 +106,7 @@ const getQuestionList = () => {
 
 // TODO: 初始化表单
 const initFormData = () => {
-  if (router.query.id !== '')
+  if (router.query.id !== undefined)
     getExamInfoApi(router.query.id as string).then((res: any) => Object.assign(examForm, res.data))
 }
 
@@ -117,7 +117,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
   await formEl.validate((valid) => {
     loading.value = true
     if (valid) {
-      if (router.query.id !== '') {
+      if (router.query.id !== undefined) {
         editExamApi(examForm)
           .then((res: any) => ElMessage.success(res.msg))
           .catch((err: any) => ElMessage.error(err.msg))
