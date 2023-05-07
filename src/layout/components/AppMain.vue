@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { Watermark } from '@pansy/watermark'
+import type { Watermark } from '@pansy/watermark'
 import { useTagsViewStore } from '@/store/modules/tags-view'
 import { useUserStore } from '@/store/modules/user'
 const watermark = ref<Watermark>()
@@ -9,14 +9,14 @@ const watermark = ref<Watermark>()
 const appMinRef = ref<HTMLElement | null | undefined | string>(null)
 const useUser = useUserStore()
 
-watermark.value = new Watermark({
-  text: [useUser.userInfo?.username || '', useUser.userInfo?.phoneNum || ''],
-  width: 120,
-  height: 64,
-  gapX: 150,
-  gapY: 150,
-  container: appMinRef.value,
-})
+// watermark.value = new Watermark({
+//   text: [useUser.userInfo?.username || '', useUser.userInfo?.phoneNum || ''],
+//   width: 120,
+//   height: 64,
+//   gapX: 150,
+//   gapY: 150,
+//   container: appMinRef.value,
+// })
 
 const route = useRoute()
 const tagsViewStore = useTagsViewStore()
