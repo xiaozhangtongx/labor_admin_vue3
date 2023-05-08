@@ -1,1 +1,0 @@
-import{aT as t}from"./index-78956fcc.js";function s(s){return t({url:"sys-question/list",method:"get",params:s})}function e(s){return t({url:"sys-question/add",method:"post",data:s})}function n(s){return t({url:`sys-question/info/${s}`,method:"get"})}function u(s){return t({url:"sys-question/update",method:"put",data:s})}export{n as a,e as b,u as e,s as g};
