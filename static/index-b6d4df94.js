@@ -1,0 +1,1 @@
+import{aT as a}from"./index-78956fcc.js";function t(t){return a({url:"sys-flow/approval/list",method:"get",params:t})}function r(t){return a({url:"sys-flow/approval/update",method:"put",data:t})}export{t as g,r as s};
