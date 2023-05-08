@@ -8,3 +8,12 @@ export function uploadImgApi(data: string[]) {
     data,
   })
 }
+
+/** 图片上传 */
+export function uploadFileApi(data: any) {
+  return request({
+    url: 'sys-upload/file',
+    method: 'post',
+    data,
+  })
+}

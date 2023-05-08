@@ -10,6 +10,7 @@ import type { IApiNoticeInfoData } from '@/api/notice/types/notice'
 import { addNoticeApi, editNoticeApi, getNoticeInfoApi } from '@/api/notice/index'
 import { uploadImgApi } from '@/api/upload/index'
 import { useUserStore } from '@/store/modules/user'
+import { blob2Base64 } from '@/utils/utils'
 
 // TODO: 图片上传
 const image_upload_handler = (blobInfo: any) => new Promise((resolve, reject) => {
@@ -22,12 +23,12 @@ const image_upload_handler = (blobInfo: any) => new Promise((resolve, reject) =>
     ElMessage.warning('图片格式错误')
   }
   else {
-    const images = [blobInfo.base64()]
-
-    uploadImgApi(images).then((result: any) => {
-      resolve(result.data[0])
-    }).catch((e) => {
-      reject(e)
+    blob2Base64(blobInfo.blob()).then((res) => {
+      uploadImgApi([res]).then((result: any) => {
+        resolve(result.data[0])
+      }).catch((e) => {
+        reject(e)
+      })
     })
   }
 })

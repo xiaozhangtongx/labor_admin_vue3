@@ -11,3 +11,13 @@ export const uniqueFun = (arr: any[]) => {
 export const getUuid = () => {
   return uuidv4().split('-').join('')
 }
+
+/** blob 转base64 */
+export const blob2Base64 = (blob: Blob): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.readAsDataURL(blob)
+    reader.onload = () => resolve(reader.result as string)
+    reader.onerror = error => reject(error)
+  })
+}

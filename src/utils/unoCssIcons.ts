@@ -19,4 +19,6 @@ export const unoCssIcons = [
   'i-mdi-file-document-edit',
   'i-mdi-bell-badge',
   'i-mdi-bell-cog',
+  'i-mdi-database-arrow-up',
+  'i-mdi-database',
 ]

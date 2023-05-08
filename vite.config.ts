@@ -48,6 +48,13 @@ export default (configEnv: ConfigEnv): UserConfigExport => {
           changeOrigin: true,
           rewrite: path => path.replace('/api/v1', ''),
         },
+        '/oss': {
+          target: 'https://laboradmin.oss-cn-beijing.aliyuncs.com',
+          ws: true,
+          /** 是否允许跨域 */
+          changeOrigin: true,
+          rewrite: path => path.replace('/oss', ''),
+        },
       },
     },
     build: {

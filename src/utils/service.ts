@@ -98,7 +98,6 @@ function createRequestFunction(service: AxiosInstance) {
         // 携带 Token
         Authorization: `${getToken()}`,
       },
-      timeout: 5000,
       baseURL: import.meta.env.VITE_BASE_API,
       data: {},
     }
