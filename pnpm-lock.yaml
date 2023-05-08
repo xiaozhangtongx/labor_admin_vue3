@@ -25,6 +25,7 @@ specifiers:
   jsdom: ^21.1.1
   lint-staged: ^13.2.0
   lodash-es: ^4.17.21
+  mpvue-calendar: ^3.0.1
   normalize.css: ^8.0.1
   nprogress: ^0.2.0
   path-browserify: ^1.0.1
@@ -63,6 +64,7 @@ dependencies:
   element-plus: registry.npmmirror.com/element-plus/2.3.1_vue@3.2.47
   js-cookie: registry.npmmirror.com/js-cookie/3.0.1
   lodash-es: registry.npmmirror.com/lodash-es/4.17.21
+  mpvue-calendar: registry.npmmirror.com/mpvue-calendar/3.0.1
   normalize.css: registry.npmmirror.com/normalize.css/8.0.1
   nprogress: registry.npmmirror.com/nprogress/0.2.0
   path-browserify: registry.npmmirror.com/path-browserify/1.0.1
@@ -2571,6 +2573,13 @@ packages:
     version: 1.9.0
     dev: true
 
+  registry.npmmirror.com/core-js/3.30.2:
+    resolution: {integrity: sha512-uBJiDmwqsbJCWHAwjrx3cvjbMXP7xD72Dmsn5LOJpiRmE3WbBbN5rCqQ2Qh6Ek6/eOrjlWngEynBWo4VxerQhg==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/core-js/-/core-js-3.30.2.tgz}
+    name: core-js
+    version: 3.30.2
+    requiresBuild: true
+    dev: false
+
   registry.npmmirror.com/cross-spawn/7.0.3:
     resolution: {integrity: sha512-iRDPJKUPVEND7dHPO8rkbOnPpyDygcDFtWjpeWNCgy8WP2rXcxXL8TskReQl6OrB2G7+UJrags1q15Fudc7G6w==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/cross-spawn/-/cross-spawn-7.0.3.tgz}
     name: cross-spawn
@@ -4970,6 +4979,15 @@ packages:
       pkg-types: registry.npmmirror.com/pkg-types/1.0.2
       ufo: registry.npmmirror.com/ufo/1.1.1
     dev: true
+
+  registry.npmmirror.com/mpvue-calendar/3.0.1:
+    resolution: {integrity: sha512-dxa+RhxSc3CCo6O/icYN4MsD7+Ml0QF+ZPHorY/qYX0rLFtomT6/ljGsJC0UbdubE1jeDi9CTJHQceX+VdvRtg==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/mpvue-calendar/-/mpvue-calendar-3.0.1.tgz}
+    name: mpvue-calendar
+    version: 3.0.1
+    dependencies:
+      core-js: registry.npmmirror.com/core-js/3.30.2
+      vue: registry.npmmirror.com/vue/3.2.47
+    dev: false
 
   registry.npmmirror.com/mrmime/1.0.1:
     resolution: {integrity: sha512-hzzEagAgDyoU1Q6yg5uI+AorQgdvMCur3FcKf7NhMKWsaYg+RnbTyHRa/9IlLF9rf455MOCtcqqrQQ83pPP7Uw==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/mrmime/-/mrmime-1.0.1.tgz}

@@ -21,4 +21,6 @@ export const unoCssIcons = [
   'i-mdi-bell-cog',
   'i-mdi-database-arrow-up',
   'i-mdi-database',
+  'i-material-symbols-folder',
+  'i-material-symbols-drive-folder-upload-sharp',
 ]
