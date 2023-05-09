@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 import type { FormInstance } from 'element-plus'
 import FinishList from './components/FinishList.vue'
 import { getApprovalTableApi, setApprovalApi } from '@/api/approval/index'
@@ -15,6 +15,7 @@ const activeName = ref('todo')
 const user = useUserStore()
 
 const formRef = ref<FormInstance>()
+const disabled = computed(() => loading.value || isFinish.value)
 
 const fromParm = reactive<IGetApprovalTableRequestData>({
   approverId: user.userInfo?.id,
@@ -49,8 +50,8 @@ const getFlowWorkTimeList = () => {
     sysFlowInfo.value = sysFlowWorkTimeList.value[0]
     active.value = sysFlowInfo.value?.id || ''
     loading.value = false
-    fromParm.current += fromParm.size
-    if (res.data.total >= sysFlowWorkTimeList.value.length)
+    fromParm.current++
+    if (res.data.total <= sysFlowWorkTimeList.value.length)
       isFinish.value = true
   })
 }
@@ -137,7 +138,7 @@ onMounted(() => {
               <el-container>
                 <el-aside>
                   <el-scrollbar height="480px">
-                    <div v-infinite-scroll="load" :infinite-scroll-immediate="false" class="infinite-list">
+                    <div v-infinite-scroll="load" :infinite-scroll-disabled="disabled" class="infinite-list">
                       <el-card
                         v-for="sysFlowWorkTime in sysFlowWorkTimeList" :key="sysFlowWorkTime.id" shadow="hover"
                         :class="{ activeCard: active === sysFlowWorkTime.id }" class="infinite-list-item  cursor-pointer "
@@ -153,6 +154,9 @@ onMounted(() => {
                           }}</span><span>{{ sysFlowWorkTime.flowWorkTimeInfo.createTime }}</span>
                         </h5>
                       </el-card>
+                      <el-divider v-if="loading" border-style="dashed">
+                        Loading...
+                      </el-divider>
                       <el-divider v-if="isFinish" border-style="dashed">
                         加载完毕
                       </el-divider>

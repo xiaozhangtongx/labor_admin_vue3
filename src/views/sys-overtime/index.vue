@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 import { ElMessage, type FormInstance } from 'element-plus'
 import FinishList from './components/FinishList.vue'
 import { getApprovalTableApi, setApprovalApi } from '@/api/approval/index'
@@ -45,6 +45,7 @@ const loading = ref<boolean>(true)
 const isFinish = ref<boolean>(false)
 const active = ref<string>('')
 const isApproval = ref<boolean>(false)
+const disabled = computed(() => loading.value || isFinish.value)
 
 // TODO: 获取要审批的加班列表
 const getFlowOverTimeList = () => {
@@ -55,8 +56,8 @@ const getFlowOverTimeList = () => {
     sysFlowInfo.value = sysFlowOverTimeList.value[0]
     active.value = sysFlowInfo.value?.id || ''
     loading.value = false
-    fromParm.current += fromParm.size
-    if (res.data.total >= sysFlowOverTimeList.value.length)
+    fromParm.current++
+    if (res.data.total <= sysFlowOverTimeList.value.length)
       isFinish.value = true
   })
 }
@@ -143,7 +144,7 @@ onMounted(() => {
               <el-container>
                 <el-aside>
                   <el-scrollbar height="480px">
-                    <div v-infinite-scroll="load" :infinite-scroll-immediate="false" class="infinite-list">
+                    <div v-infinite-scroll="load" :infinite-scroll-disabled="disabled" class="infinite-list">
                       <el-card
                         v-for="sysFlowOverTime in sysFlowOverTimeList" :key="sysFlowOverTime.id" shadow="hover"
                         :class="{ activeCard: active === sysFlowOverTime.id }" class="infinite-list-item  cursor-pointer "
@@ -157,6 +158,9 @@ onMounted(() => {
                           }}</span><span>{{ sysFlowOverTime.flowOverTimeInfo.createTime }}</span>
                         </h5>
                       </el-card>
+                      <el-divider v-if="loading" border-style="dashed">
+                        Loading...
+                      </el-divider>
                       <el-divider v-if="isFinish" border-style="dashed">
                         加载完毕
                       </el-divider>
