@@ -1,19 +1,36 @@
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import Calendar from 'mpvue-calendar'
 import lunar from 'mpvue-calendar/dist/lunar'
+import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router'
 import { useDateFormat, useNow } from '@vueuse/core'
 import { useUserStore } from '@/store/modules/user'
+import { getNoticeTableApi } from '@/api/notice/index'
+import type { GetNoticeTableResponseData, IApiNoticeInfoData, IGetNoticeTableRequestData } from '@/api/notice/types/notice'
+
+const params: IGetNoticeTableRequestData = {
+  title: '',
+  type: '',
+  size: 10,
+  current: 0,
+}
+
+const typeList = [
+  { id: '0', value: '安全公告', type: '' },
+  { id: '1', value: '学习公告', type: 'success' },
+  { id: '2', value: '考试公告', type: 'danger' },
+]
 
 const remarks = ref({ '2023-5-9': '组会' })
 const formatter = ref('YYYY-MM-DD HH:mm:ss')
+const noticeInfo = ref<IApiNoticeInfoData>()
+const noticeInfoList = ref<IApiNoticeInfoData[]>()
+const loading = ref<boolean>(false)
 const formatted = useDateFormat(useNow(), formatter)
+const dialogTableVisible = ref(false)
 const router = useRouter()
 const useUser = useUserStore()
-const count = ref(10)
-const loading = ref(false)
-const noMore = computed(() => count.value >= 20)
 const quickAppList = ref([
   { id: '1', title: '考勤管理', router: '/sys/check/index', icon: 'i-material-symbols-event-available-outline-rounded' },
   { id: '2', title: '请假审批', router: '/sys/flow/leave', icon: 'i-ic-outline-leave-bags-at-home' },
@@ -26,23 +43,39 @@ const quickAppList = ref([
   { id: '9', title: '个人中心', router: '/sys/account/index', icon: 'i-material-symbols-account-box' },
 ])
 const imgList = [
-  { id: '1', title: '考勤管理', imgUrl: 'http://laboradmin.oss-cn-beijing.aliyuncs.com/img/2023/05/0512f145b8cae5480190dedb6e301ddae8image_1683293746981.png' },
-  { id: '2', title: '考勤管理', imgUrl: 'http://laboradmin.oss-cn-beijing.aliyuncs.com/img/2023/05/051fa210dfe2b143419e5ce45b38fd2ce3image_1683293702354.png' },
-  { id: '1', title: '考勤管理', imgUrl: 'http://laboradmin.oss-cn-beijing.aliyuncs.com/img/2023/05/0531a5a2dae1fe46798445aec325a91daaimage_1683293813882.png' },
-  { id: '1', title: '考勤管理', imgUrl: 'http://laboradmin.oss-cn-beijing.aliyuncs.com/img/2023/05/0533ca72846af94b09a0ef168deec5e0c0image_1683271712678.png' },
+  { id: '1', title: '考勤管理', imgUrl: 'https://img95.699pic.com/photo/50074/3033.jpg_wh860.jpg' },
+  { id: '2', title: '考勤管理', imgUrl: 'https://tss6164458.com.tw/images/tss-a3-04.jpg' },
+  { id: '1', title: '考勤管理', imgUrl: 'https://5b0988e595225.cdn.sohucs.com/images/20171116/bd2ed35ea7b84585bfc3068cf88153b3.jpeg' },
+  { id: '1', title: '考勤管理', imgUrl: 'https://appimg.dzwww.com/share/2021/07/12/a99d64e-3ebcd381.JPG' },
 ]
-const disabled = computed(() => loading.value || noMore.value)
-const load = () => {
+
+// TODO: 获取通知列表
+const getNoticeList = () => {
   loading.value = true
-  setTimeout(() => {
-    count.value += 2
-    loading.value = false
-  }, 2000)
+  getNoticeTableApi(params)
+    .then((res: GetNoticeTableResponseData) => {
+      noticeInfoList.value = res.data.records
+    })
+    .catch(err => ElMessage.error(err.message))
+    .finally(() => {
+      loading.value = false
+    })
 }
+
+// TODO: 展示公告预览
+const onShowDialog = (row?: IApiNoticeInfoData) => {
+  dialogTableVisible.value = true
+  noticeInfo.value = row
+}
+
+// TODO: 初始化通知
+onMounted(() => {
+  getNoticeList()
+})
 </script>
 
 <template>
-  <div class="app-container">
+  <div v-loading="loading" class="app-container">
     <el-container>
       <el-aside width="73%" class="p-2">
         <el-carousel height="400px" trigger="click">
@@ -90,21 +123,36 @@ const load = () => {
             </div>
           </template>
           <div class="infinite-list-wrapper" style="overflow: auto">
-            <ul
-              v-infinite-scroll="load"
-              class="list"
-              :infinite-scroll-disabled="disabled"
-            >
-              <li v-for="i in count" :key="i" class="list-item">
-                通知 {{ i }}
-              </li>
-            </ul>
-            <p v-if="loading">
-              Loading...
-            </p>
-            <p v-if="noMore">
-              No more
-            </p>
+            <el-scrollbar height="300px">
+              <div class="infinite-list">
+                <el-card
+                  v-for="noticeItem in noticeInfoList" :key="noticeItem.id" shadow="hover"
+                  class="infinite-list-item  cursor-pointer w-370px"
+                  @click="onShowDialog(noticeItem)"
+                >
+                  <h4 class="flex justify-between">
+                    <MyStatus :status="noticeItem.type" :status-list="typeList" />
+                    <span>{{ noticeItem.title }}</span>
+                  </h4>
+                  <h5 class="flex justify-between w-60 text-gray-500">
+                    <span> {{ noticeItem.creator.username }}</span>
+                    <span>{{ noticeItem.createTime }}</span>
+                  </h5>
+                </el-card>
+                <el-divider v-if="loading" border-style="dashed">
+                  Loading...
+                </el-divider>
+                <el-divider v-else border-style="dashed">
+                  <el-button
+                    type="primary"
+                    link
+                    @click="router.push('/sys-notice/list')"
+                  >
+                    查看更多
+                  </el-button>
+                </el-divider>
+              </div>
+            </el-scrollbar>
           </div>
         </el-card>
       </el-aside>
@@ -145,6 +193,27 @@ const load = () => {
         </el-card>
       </el-aside>
     </el-container>
+
+    <!-- 预览弹窗 -->
+    <el-dialog v-model="dialogTableVisible" destroy-on-close width="70%" title="公告预览">
+      <el-scrollbar height="400px">
+        <h2 class="text-center">
+          {{ noticeInfo?.title }}
+        </h2>
+        <h4 class="text-center">
+          <strong>发布者：</strong> <span class="text-blue-400">{{ noticeInfo?.creator.username }}</span>
+          <strong class="ml-30px">发布时间：</strong>{{ noticeInfo?.createTime }}
+          <strong class="ml-30px">类型：</strong> <MyStatus :status="noticeInfo?.type" :status-list="typeList" />
+        </h4>
+        <el-divider border-style="dotted">
+          正文
+        </el-divider>
+        <section
+          class="flex flex-col justify-center items-center"
+          v-html="noticeInfo?.content"
+        />
+      </el-scrollbar>
+    </el-dialog>
   </div>
 </template>
 
@@ -157,13 +226,6 @@ const load = () => {
   margin: 0;
 }
 
-.el-carousel__item:nth-child(2n) {
-  background-color: #99a9bf;
-}
-
-.el-carousel__item:nth-child(2n + 1) {
-  background-color: #d3dce6;
-}
 .infinite-list-wrapper {
   height: 330px;
   text-align: center;
@@ -182,7 +244,21 @@ const load = () => {
   background: var(--el-color-danger-light-9);
   color: var(--el-color-danger);
 }
-.infinite-list-wrapper .list-item + .list-item {
+
+.infinite-list .infinite-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 80px;
+  margin: 10px;
+  background: #fff;
+
+  &:hover {
+    background: #DBEAFE;
+  }
+}
+
+.infinite-list .infinite-list-item+.list-item {
   margin-top: 10px;
 }
 
