@@ -23,4 +23,6 @@ export const unoCssIcons = [
   'i-mdi-database',
   'i-material-symbols-folder',
   'i-material-symbols-drive-folder-upload-sharp',
+  'i-tabler-device-desktop-analytics',
+  'i-ep-data-analysis',
 ]
