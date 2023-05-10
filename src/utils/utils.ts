@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from 'uuid'
+import dayjs from 'dayjs'
 
 /** 去除对象数组中重复的元素 */
 export const uniqueFun = (arr: any[]) => {
@@ -20,4 +21,13 @@ export const blob2Base64 = (blob: Blob): Promise<string> => {
     reader.onload = () => resolve(reader.result as string)
     reader.onerror = error => reject(error)
   })
+}
+
+/** 获取最近n天的天气 */
+export const getDays = (number: number) => {
+  const dates = []
+  for (let i = 0; i < number; i++)
+    dates.unshift(dayjs().subtract(i, 'day').format('YYYY-MM-DD'))
+
+  return dates
 }

@@ -1,8 +1,10 @@
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue'
 import * as echarts from 'echarts'
+import { getDays } from '@/utils/utils'
 
 const chart = ref(null)
+const dayData = getDays(10)
 
 onMounted(() => {
   const myChart = echarts.init(chart.value!)
@@ -26,7 +28,7 @@ onMounted(() => {
     xAxis: [
       {
         type: 'category',
-        data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日', '12', '123', '1234'],
+        data: dayData,
       },
     ],
     yAxis: [

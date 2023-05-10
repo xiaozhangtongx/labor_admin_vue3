@@ -7,7 +7,7 @@ const studyDataList = [
   { id: 1, bgColor: 'bg-blue-50', label: '访问总人次', status: 0, data: 5670, changeData: 206.31 },
   { id: 2, bgColor: 'bg-green-50', label: '试卷总量', status: 0, data: 1314, changeData: 3 },
   { id: 1, bgColor: 'bg-yellow-50', label: '试题总量', status: 0, data: 5200, changeData: 20 },
-  { id: 1, bgColor: 'bg-purple-50', label: '考试通过率', status: 1, data: 200, changeData: 30 },
+  { id: 1, bgColor: 'bg-purple-50', label: '考试通过率', status: 1, data: '80.23%', changeData: '3.27%' },
 ]
 
 const PieChartDataList = [
@@ -25,7 +25,7 @@ const PieChartDataList = [
     title: '试题类型',
     data: [
       { value: 234, name: '选择题' },
-      { value: 135, name: '填空题' },
+      { value: 135, name: '判断题' },
     ],
   },
   {
@@ -58,7 +58,7 @@ const PieChartDataList = [
               相较于昨日
             </h3>
             <h2 class=" font-thin font-mono text-center" :class="studyData.status ? 'text-green-500' : 'text-red-500'">
-              206.31 <span class="font-bold  " :class="studyData.status ? 'i-tabler-arrow-narrow-down' : 'i-tabler-arrow-narrow-up'" />
+              {{ studyData.changeData }}<span class="font-bold  " :class="studyData.status ? 'i-tabler-arrow-narrow-down' : 'i-tabler-arrow-narrow-up'" />
             </h2>
           </div>
         </div>
