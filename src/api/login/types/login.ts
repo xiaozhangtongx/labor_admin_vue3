@@ -6,8 +6,6 @@ export interface ILoginRequestData {
   code: string
 }
 
-export type LoginCodeResponseData = IApiResponseData<string>
-
 export type LoginResponseData = IApiResponseData<any>
 
 export type UserInfoResponseData = IApiResponseData<User.IApiUserInfoData>

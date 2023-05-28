@@ -1,16 +1,93 @@
 {
-  "Vue3 Hook 代码结构一键生成": {
-    "prefix": "Vue3 Hook",
+  "export-all": {
     "body": [
-      "import { ref } from \"vue\"\n",
-      "const refName1 = ref<string>(\"这是一个响应式变量\")\n",
-      "export function useHookName() {",
-      "\tconst refName2 = ref<string>(\"这是一个响应式变量\")\n",
-      "\tconst fnName = () => {}\n",
-      "\treturn { refName1, refName2, fnName }",
-      "}",
-      "$1"
+      "export * from '$2';"
     ],
-    "description": "Vue3 Hook"
+    "description": "Export a module",
+    "prefix": "ex",
+    "scope": "javascript,typescript"
+  },
+  "if-vitest": {
+    "body": [
+      "if (import.meta.vitest) {",
+      "  const { describe, it, expect } = import.meta.vitest",
+      "  ${1}",
+      "}"
+    ],
+    "prefix": "ifv",
+    "scope": "javascript,typescript"
+  },
+  "import": {
+    "body": [
+      "import { $1 } from '$2';"
+    ],
+    "description": "Import a module",
+    "prefix": "im",
+    "scope": "javascript,typescript"
+  },
+  "markdown-api-table": {
+    "body": [
+      "<table>",
+      "<tr>",
+      "<td width=\"400px\" valign=\"top\">",
+      "",
+      "### API",
+      "",
+      "Description",
+      "",
+      "</td>",
+      "<td width=\"600px\"><br>",
+      "",
+      "```ts",
+      "// code block",
+      "```",
+      "",
+      "</td>",
+      "</tr>",
+      "</table>"
+    ],
+    "prefix": "table",
+    "scope": "markdown"
+  },
+  "vue-computed": {
+    "body": [
+      "computed(() => { $1 })"
+    ],
+    "prefix": "com",
+    "scope": "javascript,typescript,vue"
+  },
+  "vue-script-setup": {
+    "body": [
+      "<script setup lang=\"ts\">",
+      "const props = defineProps<{",
+      "  modelValue?: boolean,",
+      "}>()",
+      "$1",
+      "</script>",
+      "",
+      "<template>",
+      "  <div>",
+      "    <slot/>",
+      "  </div>",
+      "</template>"
+    ],
+    "prefix": "<sc",
+    "scope": "vue"
+  },
+  "vue-template-ref": {
+    "body": [
+      "const ${1:el} = shallowRef<HTMLDivElement>()"
+    ],
+    "prefix": "tref",
+    "scope": "javascript,typescript,vue"
+  },
+  "vue-watch-effect": {
+    "body": [
+      "watchEffect(() => {",
+      "  $1",
+      "})"
+    ],
+    "prefix": "watchE",
+    "scope": "javascript,typescript,vue"
   }
 }

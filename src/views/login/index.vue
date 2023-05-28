@@ -1,13 +1,13 @@
 <script lang="ts" setup>
-import { reactive, ref } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { Key, Loading, Lock, Picture, User } from '@element-plus/icons-vue'
 import type { FormInstance, FormRules } from 'element-plus'
+import { ElNotification } from 'element-plus'
 import { useUserStore } from '@/store/modules/user'
 import ThemeSwitch from '@/components/ThemeSwitch/index.vue'
-
+import { getLoginCodeApi } from '@/api/login/index'
 import { type ILoginRequestData } from '@/api/login/types/login'
-
 const router = useRouter()
 const loginFormRef = ref<FormInstance | null>(null)
 
@@ -15,20 +15,35 @@ const loginFormRef = ref<FormInstance | null>(null)
 const loading = ref(false)
 /** 验证码图片 URL */
 const codeUrl = ref('')
+const code = ref('')
 
 /** 登录表单数据 */
 const loginForm: ILoginRequestData = reactive({
   phoneNum: '15873976550',
   password: '123456',
-  code: '1234',
+  code: '',
 })
 /** 创建验证码 */
 const createCode = () => {
-  // 先清空验证码的输入
-  loginForm.code = ''
-  // 获取验证码
-  codeUrl.value = 'https://dummyimage.com/100x40/dcdfe6/000000.png&text=1234'
+  getLoginCodeApi().then((res: any) => {
+    code.value = res.data.code
+    codeUrl.value = res.data.captchaImg
+  })
 }
+
+// TODO: 校验验证码
+const checkCode = (rule: any, value: any, callback: any) => {
+  // eslint-disable-next-line max-statements-per-line
+  if (value === '') { callback(new Error('请输入验证码')) }
+
+  else if (value.toLowerCase() !== code.value.toLowerCase()) {
+    callback(new Error('验证码输入不正确'))
+    createCode()
+  }
+
+  else { callback() }
+}
+
 /** 登录表单校验规则 */
 const loginFormRules: FormRules = {
   phoneNum: [{ required: true, message: '请输入手机号', trigger: 'blur' }],
@@ -36,7 +51,7 @@ const loginFormRules: FormRules = {
     { required: true, message: '请输入密码', trigger: 'blur' },
     { min: 6, max: 16, message: '长度在 6 到 16 个字符', trigger: 'blur' },
   ],
-  code: [{ required: true, message: '请输入验证码', trigger: 'blur' }],
+  code: [{ validator: checkCode, trigger: 'blur' }],
 }
 /** 登录逻辑 */
 const handleLogin = () => {
@@ -51,6 +66,11 @@ const handleLogin = () => {
         })
         .then(() => {
           router.push({ path: '/' })
+          ElNotification({
+            title: '登陆成功',
+            message: '欢迎您！今天又是元气满满的一天！',
+            type: 'success',
+          })
         })
         .catch(() => {
           createCode()
@@ -67,7 +87,9 @@ const handleLogin = () => {
 }
 
 /** 初始化验证码 */
-createCode()
+onMounted(() => {
+  createCode()
+})
 </script>
 
 <template>

@@ -26,6 +26,7 @@ const editForm = reactive<IMenuRequestData>({
   redirect: '',
   parentId: '',
   menuName: '',
+  hidden: 1,
 })
 
 const router = useRouter()
@@ -66,23 +67,14 @@ const editFormRules = reactive<FormRules>({
   status: [
     { required: true, message: '请选择状态', trigger: 'blur' },
   ],
+  hidden: [
+    { required: true, message: '请选择是否展示', trigger: 'blur' },
+  ],
 })
 
 const editHandle = (menuInfo: IMenuResponseData) => {
   dialogVisible.value = true
-  editForm.id = menuInfo.id
-  editForm.menuPath = menuInfo.menuPath
-  editForm.menuTitle = menuInfo.menuTitle
-  editForm.menuPerms = menuInfo.menuPerms
-  editForm.menuIcon = menuInfo.menuIcon || ''
-  editForm.menuPath = menuInfo.menuPath
-  editForm.menuType = menuInfo.menuType
-  editForm.status = menuInfo.status
-  editForm.orderNum = menuInfo.orderNum || 0
-  editForm.redirect = menuInfo.redirect || ''
-  editForm.parentId = menuInfo.parentId
-  editForm.component = menuInfo.component as unknown as string
-  editForm.menuName = menuInfo.menuName
+  Object.assign(editForm, menuInfo)
 }
 
 const deleteHandle = (menuInfo: IMenuResponseData) => {
@@ -237,6 +229,21 @@ const submitForm = async (formEl: FormInstance | undefined) => {
       </el-table-column>
 
       <el-table-column
+        prop="hidden"
+        label="展示状态"
+        width="73"
+      >
+        <template #default="scope">
+          <el-tag v-if="scope.row.hidden === 0" size="small" type="danger">
+            隐藏
+          </el-tag>
+          <el-tag v-else-if="scope.row.hidden === 1" size="small" type="success">
+            展示
+          </el-tag>
+        </template>
+      </el-table-column>
+
+      <el-table-column
         prop="icon"
         label="操作"
         width="170"
@@ -261,7 +268,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
       width="537"
       align-center
     >
-      <el-form ref="ruleFormRef" :model="editForm" :rules="editFormRules" label-width="100px" class="demo-editForm">
+      <el-form ref="ruleFormRef" :model="editForm" :rules="editFormRules" label-width="100px" class="demo-editForm" label-position="left">
         <el-form-item label="上级菜单" prop="parentId">
           <el-select v-model="editForm.parentId" placeholder="请选择上级菜单">
             <template v-for="item in formTreeData" :key="item.id">
@@ -320,6 +327,17 @@ const submitForm = async (formEl: FormInstance | undefined) => {
             </el-radio>
             <el-radio :label="1">
               禁用
+            </el-radio>
+          </el-radio-group>
+        </el-form-item>
+
+        <el-form-item label="是否展示" prop="hidden" label-width="100px">
+          <el-radio-group v-model="editForm.hidden">
+            <el-radio :label="1">
+              是
+            </el-radio>
+            <el-radio :label="0">
+              否
             </el-radio>
           </el-radio-group>
         </el-form-item>

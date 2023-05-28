@@ -3,8 +3,8 @@ import { request } from '@/utils/service'
 
 /** 获取登录验证码 */
 export function getLoginCodeApi() {
-  return request<Login.LoginCodeResponseData>({
-    url: 'login/code',
+  return request({
+    url: 'sys-user/code',
     method: 'get',
   })
 }

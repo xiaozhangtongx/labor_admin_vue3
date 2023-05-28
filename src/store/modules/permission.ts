@@ -32,6 +32,7 @@ const menuChildren2Route = (menu: IMenuResponseData): RouteRecordRaw => {
       title: menu.menuTitle,
       svgIcon: menu.menuIcon,
       roles: menu.menuPerms.split(','),
+      hidden: menu.hidden === 0,
     },
     component: modules[url],
   }

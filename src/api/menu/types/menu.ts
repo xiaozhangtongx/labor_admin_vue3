@@ -12,6 +12,7 @@ export interface IMenuResponseData {
   redirect?: string
   menuType: number
   status: number
+  hidden: number
 }
 
 export interface IMenuRequestData {
@@ -27,6 +28,7 @@ export interface IMenuRequestData {
   redirect?: string
   menuType: number
   status: number
+  hidden: number
 }
 
 export type UserNavResponseData = IApiResponseData<IMenuResponseData[]>

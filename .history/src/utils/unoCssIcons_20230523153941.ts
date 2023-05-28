@@ -1,0 +1,31 @@
+// @unocss-include
+export const unoCssIcons = [
+  'i-gg-menu-round',
+  'i-fluent-people-team-24-filled',
+  'i-material-symbols-person-search-outline',
+  'i-eos-icons-role-binding-outlined',
+  'i-material-symbols-flowsheet-outline',
+  'i-ic-outline-leave-bags-at-home',
+  'i-material-symbols-more-time',
+  'i-material-symbols-free-cancellation-rounded',
+  'i-ci-timer-add',
+  'i-icon-park-outline-system',
+  'i-material-symbols-event-available-outline-rounded',
+  'i-fluent-book-question-mark-24-filled',
+  'i-healthicons-i-exam-multiple-choice',
+  'i-material-symbols-radio-button-checked-outline',
+  'i-healthicons-i-exam-qualification',
+  'i-mdi-file-document',
+  'i-mdi-file-document-edit',
+  'i-mdi-bell-badge',
+  'i-mdi-bell-cog',
+  'i-mdi-database-arrow-up',
+  'i-mdi-database',
+  'i-material-symbols-folder',
+  'i-material-symbols-drive-folder-upload-sharp',
+  'i-tabler-device-desktop-analytics',
+  'i-ep-data-analysis',
+  'i-ic-twotone-account-tree',
+]
+
+vue3

@@ -39,7 +39,7 @@ const quickAppList = ref([
   { id: '5', title: '学习资料', router: '/sys-study/list', icon: 'i-material-symbols-folder' },
   { id: '6', title: '通知中心', router: '/sys-notice/list', icon: 'i-mdi-bell-badge' },
   { id: '7', title: '卷库管理', router: '/sys-question/list', icon: 'i-fluent-book-question-mark-24-filled' },
-  { id: '8', title: '数据中心', router: '/sys/data/analysis', icon: 'i-mdi-database' },
+  { id: '8', title: '数据中心', router: '/sys-data/study', icon: 'i-mdi-database' },
   { id: '9', title: '个人中心', router: '/sys/account/index', icon: 'i-material-symbols-account-box' },
 ])
 const imgList = [
