@@ -1,0 +1,1 @@
+import{d as r,e as a}from"./_Uint8Array-e7b42d57.js";import{cb as n,bk as t}from"./index-af1b0f7f.js";var e=n?n.isConcatSpreadable:void 0;function o(a){return t(a)||r(a)||!!(e&&a&&a[e])}function i(r,n,t,e,s){var f=-1,b=r.length;for(t||(t=o),s||(s=[]);++f<b;){var c=r[f];n>0&&t(c)?n>1?i(c,n-1,t,e,s):a(s,c):e||(s[s.length]=c)}return s}export{i as b};
