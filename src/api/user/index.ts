@@ -53,3 +53,12 @@ export function updateUserRoleApi(userId: string, roleIds: String[]) {
     data: roleIds,
   })
 }
+
+/** 重置用户密码 */
+export function repassUserApi(data: User.IApiUserInfoData) {
+  return request({
+    url: 'sys-user/repass',
+    method: 'put',
+    data,
+  })
+}

@@ -1,5 +1,6 @@
 import type { IApiRoleInfoData } from '@/api/role/types/role'
 export interface IApiUserInfoData {
+[x: string]: any
   id: string
   username: string
   phoneNum: string
