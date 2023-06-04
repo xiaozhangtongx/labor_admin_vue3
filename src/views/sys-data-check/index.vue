@@ -4,10 +4,10 @@ import WorkTable from './components/WorkTable.vue'
 import CheckTimeLineChart from './components/CheckTimeLineChart.vue'
 
 const checkDataList = [
-  { id: 1, bgColor: 'bg-blue-300', textColor: 'text-blue-300', label: '部门人数', data: 68, icon: 'i-fluent-people-team-24-filled' },
-  { id: 2, bgColor: 'bg-green-300', textColor: 'text-green-300', label: '正常出勤人数', data: 62, icon: 'i-material-symbols-event-available-outline-rounded' },
+  { id: 1, bgColor: 'bg-blue-300', textColor: 'text-blue-300', label: '部门人数', data: 5, icon: 'i-fluent-people-team-24-filled' },
+  { id: 2, bgColor: 'bg-green-300', textColor: 'text-green-300', label: '正常出勤人数', data: 1, icon: 'i-material-symbols-event-available-outline-rounded' },
   { id: 3, bgColor: 'bg-yellow-300', textColor: 'text-yellow-300', label: '迟到人数', data: 2, icon: 'i-ic-twotone-free-cancellation' },
-  { id: 4, bgColor: 'bg-purple-300', textColor: 'text-purple-300', label: '请假人数', data: 4, icon: 'i-ic-outline-leave-bags-at-home' },
+  { id: 4, bgColor: 'bg-purple-300', textColor: 'text-purple-300', label: '请假人数', data: 2, icon: 'i-ic-outline-leave-bags-at-home' },
 ]
 </script>
 

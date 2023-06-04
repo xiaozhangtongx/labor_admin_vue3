@@ -45,7 +45,7 @@ const typeList = [
   { id: 2, value: '考试公告', type: 'danger' },
 ]
 const init = ref({
-  plugins: 'lists link image table code help wordcount a11ychecker',
+  plugins: 'lists link image table code help wordcount',
   language_url: 'tinymce/langs/zh-Hans.js',
   language: 'zh-Hans',
   toolbar: 'undo redo | styleselect | bold italic | link image a11ycheck | formatselect |  alignleft aligncenter alignright | bullist numlist outdent indent | help',

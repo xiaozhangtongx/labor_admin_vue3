@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { nextTick, onMounted, reactive, ref } from 'vue'
-import { ElMessage, ElMessageBox, type ElMessageBoxOptions } from 'element-plus'
+import type { ElMessageBoxOptions, UploadInstance, UploadProps, UploadRawFile } from 'element-plus'
 import {
   type VxeFormDefines,
   type VxeFormInstance,
@@ -12,14 +12,17 @@ import {
   type VxeModalProps,
 } from 'vxe-table'
 import { useRouter } from 'vue-router'
+import { ElMessage, ElMessageBox, genFileId } from 'element-plus'
+import { Plus } from '@element-plus/icons-vue'
 import RoleColumnSolts from './tsx/RoleColumnSolts'
 import StatusColumnSolts from './tsx/StatusColumnSolts'
 import AvatarColumnSolts from './tsx/AvatarColumnSolts'
-import { addUserApi, deleteUserApi, deleteUsersApi, getUserTableApi, updateUserInfoApi, updateUserRoleApi } from '@/api/user/index'
+import { addUserApi, deleteUserApi, deleteUsersApi, getUserTableApi, repassUserApi, updateUserInfoApi, updateUserRoleApi } from '@/api/user/index'
 import type { GetTableResponseData, IApiUserInfoData } from '@/api/user/types/user'
 import { getRoleListApi } from '@/api/role/index'
 import { type IGetRoleListRequestData } from '@/api/role/types/role'
 import { isPhoneNumber } from '@/utils/validate'
+import { client, options, random_name } from '@/utils/oss'
 
 interface IRoleItem {
   id: string
@@ -31,13 +34,29 @@ defineOptions({
 })
 
 const roleLists = ref<IRoleItem[]>()
+const list = ref<any>([])
 const router = useRouter()
-
+const uploadTaskCover = ref<UploadRawFile>()
+const uploadPercentageCover = ref<number>(0)
+const uploading = ref(false)
+const uploadingCover = ref(false)
+const uploadCover = ref<UploadInstance>()
+const dialogVisible = ref(false)
+const uploadStatusCover = ref('')
 const loading = ref(false)
 const dialogTableVisible = ref(false)
 const roleForm = reactive({
   roleList: [] as String[],
   userId: '',
+})
+const studyDataForm = reactive<any>({
+  coverUrl: '',
+})
+const formDataCover = reactive<any>({
+  fileName: '',
+  type: '',
+  size: 0,
+  url: '',
 })
 
 const getRoleList = async (query: string) => {
@@ -59,6 +78,82 @@ const onSubmit = () => {
     router.go(0)
     dialogTableVisible.value = false
   })
+}
+// TODO: 上传前回调
+const beforeUploadCover = (file: UploadRawFile) => {
+  if (uploading.value) {
+    ElMessage.warning('当前有文件正在上传，请稍后再试')
+    return false
+  }
+
+  uploadingCover.value = true
+  uploadPercentageCover.value = 0
+  uploadStatusCover.value = '正在上传...'
+  uploadTaskCover.value = file
+
+  formDataCover.fileName = file.name
+  formDataCover.type = file.type
+  formDataCover.size = file.size
+
+  return true
+}
+
+// TODO: 上传头像
+const multipartUploadCover = (file: any) => {
+  const fileName = `/laboradmin/${random_name}.${file.name.split('.')[1]}`
+  if (beforeUploadCover(file.raw)) {
+    // 请求oss接口上传
+    client
+      .multipartUpload(fileName, file.raw,
+        {
+          progress(percentage: number) { // 获取进度条的值
+            uploadPercentageCover.value = Math.floor(percentage * 100)
+          },
+        },
+        { ...options },
+      )
+      .then((response: any) => {
+        if (response.res.statusCode === 200) {
+          list.value.push({
+            url: response.res.requestUrls[0].split('?')[0],
+            name: fileName,
+          })
+          studyDataForm.coverUrl = response.res.requestUrls[0].split('?')[0]
+          uploadStatusCover.value = '上传完成'
+          uploadingCover.value = false
+          uploadPercentageCover.value = 100
+        }
+      })
+      .catch((error: any) => {
+        ElMessage.error(error.message) // 错误返回
+        studyDataForm.coverUrl = ''
+        uploadStatusCover.value = '上传失败'
+        uploadingCover.value = false
+      })
+  }
+}
+
+// TODO: 上传头像修改回调
+const handleChangeCover: UploadProps['onChange'] = (uploadFile) => {
+  multipartUploadCover(uploadFile)
+}
+
+// TODO: 头像上传处理替换处理上传
+const handleExceedCover: UploadProps['onExceed'] = (files) => {
+  uploadCover.value!.clearFiles()
+  const file = files[0] as UploadRawFile
+  file.uid = genFileId()
+  uploadCover.value!.handleStart(file)
+}
+
+const handleRemove: UploadProps['onRemove'] = (uploadFile, uploadFiles) => {
+  list.value = []
+  studyDataForm.coverUrl = ''
+}
+
+const handlePictureCardPreview: UploadProps['onPreview'] = (uploadFile) => {
+  studyDataForm.coverUrl = uploadFile.url!
+  dialogVisible.value = true
 }
 
 onMounted(() => {
@@ -260,12 +355,11 @@ const xFormOpt = reactive<VxeFormProps>({
       field: 'password',
       title: '密码',
       slots: { default: 'password_item' },
-      // itemRender: { name: '$input', props: { placeholder: '请输入密码' } },
     },
     {
       field: 'avatar',
-      title: '头像链接',
-      itemRender: { name: '$input', props: { placeholder: '请输入头像链接' } },
+      title: '用户头像',
+      slots: { default: 'avatar_item' },
     },
     {
       align: 'right',
@@ -339,6 +433,11 @@ const crudStore = reactive({
       xFormOpt.data.username = row.username
       xFormOpt.data.phoneNum = row.phoneNum
       xFormOpt.data.avatar = row.avatar
+      studyDataForm.coverUrl = row.avatar
+      list.value = [{
+        url: studyDataForm.coverUrl,
+        name: studyDataForm.coverUrl,
+      }]
       xFormOpt.data.password = '傻子别看了，没有密码的'
     }
     else {
@@ -375,6 +474,7 @@ const crudStore = reactive({
         !crudStore.isUpdate && crudStore.afterInsert()
         crudStore.commitQuery()
       }
+      xFormOpt.data.avatar = studyDataForm.coverUrl
       if (crudStore.isUpdate) {
         // 调用修改接口
         updateUserInfoApi(xFormOpt.data)
@@ -439,7 +539,7 @@ const crudStore = reactive({
     }
     ElMessageBox.confirm(tip, '提示', config)
       .then(() => {
-        deleteUserApi(row.id)
+        repassUserApi(row)
           .then(() => {
             ElMessage.success('密码重置成功')
             crudStore.afterDelete()
@@ -542,6 +642,39 @@ const crudStore = reactive({
             :disabled="crudStore.isUpdate"
           />
         </template>
+        <!-- 用户头像 -->
+        <template #avatar_item>
+          <el-upload
+            ref="uploadCover"
+            v-model:file-list="list"
+            class="upload-Cover"
+            action
+            multiple
+            :auto-upload="false"
+            accept=".jpg,.jpeg,.png,JPG,.PNG"
+            :data="formDataCover"
+            list-type="picture-card"
+            :limit="1"
+            :on-exceed="handleExceedCover"
+            :on-change="handleChangeCover"
+            :on-remove="handleRemove"
+            :on-preview="handlePictureCardPreview"
+          >
+            <el-icon>
+              <Plus />
+            </el-icon>
+          </el-upload>
+          <div v-if="uploadingCover" class="ml-4">
+            <div class="upload-progress">
+              <el-progress :percentage="uploadPercentageCover" />
+            </div>
+            <div>{{ uploadStatusCover }}</div>
+          </div>
+          {{ }}
+          <el-dialog v-model="dialogVisible">
+            <img w-full :src="studyDataForm.coverUrl" alt="Preview Image">
+          </el-dialog>
+        </template>
       </vxe-form>
     </vxe-modal>
 
@@ -568,6 +701,13 @@ const crudStore = reactive({
   </div>
 </template>
 
-<style lang="scss" scoped>
-
+<style lang="scss">
+.el-upload--picture-card{
+  width: 73px;
+  height: 73px;
+}
+.el-upload-list--picture-card .el-upload-list__item{
+  width: 73px;
+  height: 73px;
+}
 </style>

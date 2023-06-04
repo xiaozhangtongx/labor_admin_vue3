@@ -3,10 +3,10 @@ import { onMounted, reactive, ref } from 'vue'
 import { ElMessage, genFileId } from 'element-plus'
 import type { FormInstance, FormRules, UploadInstance, UploadProps, UploadRawFile } from 'element-plus'
 import { useRoute } from 'vue-router'
-import { getToken } from '@/utils/cache/cookies'
 import type { IApiStudyInfoData } from '@/api/study/types/study'
 import { useUserStore } from '@/store/modules/user'
 import { addStudyApi, editStudyApi, getStudyInfoApi } from '@/api/study/index'
+import { client, options, random_name } from '@/utils/oss'
 
 const router = useRoute()
 const useUser = useUserStore()
@@ -22,6 +22,7 @@ const uploadPercentage = ref<number>(0)
 const uploadPercentageCover = ref<number>(0)
 const uploadTask = ref<UploadRawFile>()
 const uploadTaskCover = ref<UploadRawFile>()
+const file = ref<any>([])
 const formData = reactive<any>({
   fileName: '',
   type: '',
@@ -96,33 +97,52 @@ const beforeUploadCover = (file: UploadRawFile) => {
   return true
 }
 
-// TODO: 封面上传处理成功回调
-const handleSuccessCover: UploadProps['onSuccess'] = (res) => {
-  studyDataForm.coverUrl = res.data
-  uploadStatusCover.value = '上传完成'
-  uploadingCover.value = false
-  uploadPercentageCover.value = 100
+// TODO: 上传封面
+const multipartUploadCover = (file: any) => {
+  const list: any = []
+  const fileName = `/laboradmin/${random_name}.${file.name.split('.')[1]}`
+  if (beforeUploadCover(file.raw)) {
+    // 请求oss接口上传
+    client
+      .multipartUpload(fileName, file.raw,
+        {
+          progress(percentage: number) { // 获取进度条的值
+            uploadPercentageCover.value = Math.floor(percentage * 100)
+          },
+        },
+        { ...options },
+      )
+      .then((response: any) => {
+        if (response.res.statusCode === 200) {
+          list.push({
+            fileUrl: response.res.requestUrls[0].split('?')[0],
+          })
+          studyDataForm.coverUrl = response.res.requestUrls[0].split('?')[0]
+          uploadStatusCover.value = '上传完成'
+          uploadingCover.value = false
+          uploadPercentageCover.value = 100
+        }
+      })
+      .catch((error: any) => {
+        ElMessage.error(error.message) // 错误返回
+        studyDataForm.coverUrl = ''
+        uploadStatusCover.value = '上传失败'
+        uploadingCover.value = false
+      })
+  }
 }
 
-// TODO: 封面上传处理失败回调
-const handleErrorCover: UploadProps['onError'] = (error) => {
-  studyDataForm.coverUrl = ''
-  uploadStatusCover.value = '上传失败'
-  uploadingCover.value = false
-  console.error(error)
+// TODO: 上传封面修改回调
+const handleChangeCover: UploadProps['onChange'] = (uploadFile) => {
+  multipartUploadCover(uploadFile)
 }
 
-// TODO: 封面上传处理上传
+// TODO: 封面上传处理替换处理上传
 const handleExceedCover: UploadProps['onExceed'] = (files) => {
   uploadCover.value!.clearFiles()
   const file = files[0] as UploadRawFile
   file.uid = genFileId()
-  uploadCover.value!.submit()
-}
-
-// TODO: 封面上传进度处理
-const onUploadProgressCover: UploadProps['onProgress'] = (event) => {
-  uploadPercentageCover.value = Math.floor((event.loaded / event.total) * 100)
+  uploadCover.value!.handleStart(file)
 }
 
 // TODO: 上传前回调
@@ -167,20 +187,39 @@ const beforeUpload = (file: UploadRawFile) => {
   return true
 }
 
-// TODO: 处理成功回调
-const handleSuccess: UploadProps['onSuccess'] = (res) => {
-  studyDataForm.fileUrl = res.data
-  uploadStatus.value = '上传完成'
-  uploading.value = false
-  uploadPercentage.value = 100
-}
-
-// TODO: 处理失败回调
-const handleError: UploadProps['onError'] = (error) => {
-  studyDataForm.fileUrl = ''
-  uploadStatus.value = '上传失败'
-  uploading.value = false
-  console.error(error)
+// TODO: 文件上传
+const multipartUpload = (file: any) => {
+  const list: any = []
+  const fileName = `/laboradmin/${random_name}.${file.name.split('.')[1]}`
+  if (beforeUpload(file.raw)) {
+    // 请求oss接口上传
+    client
+      .multipartUpload(fileName, file.raw,
+        {
+          progress(percentage: number) { // 获取进度条的值
+            uploadPercentage.value = Math.floor(percentage * 100)
+          },
+        },
+        { ...options },
+      )
+      .then((response: any) => {
+        if (response.res.statusCode === 200) {
+          list.push({
+            fileUrl: response.res.requestUrls[0].split('?')[0],
+          })
+          studyDataForm.fileUrl = response.res.requestUrls[0].split('?')[0]
+          uploadStatus.value = '上传完成'
+          uploading.value = false
+          uploadPercentage.value = 100
+        }
+      })
+      .catch((error: any) => {
+        ElMessage.error(error.message) // 错误返回
+        studyDataForm.fileUrl = ''
+        uploadStatus.value = '上传失败'
+        uploading.value = false
+      })
+  }
 }
 
 // TODO: 处理上传
@@ -188,12 +227,12 @@ const handleExceed: UploadProps['onExceed'] = (files) => {
   upload.value!.clearFiles()
   const file = files[0] as UploadRawFile
   file.uid = genFileId()
-  upload.value!.submit()
+  upload.value!.handleStart(file)
 }
 
-// TODO: 进度处理
-const onUploadProgress: UploadProps['onProgress'] = (event) => {
-  uploadPercentage.value = Math.floor((event.loaded / event.total) * 100)
+// TODO: 变化回调
+const handleChange: UploadProps['onChange'] = (uploadFile) => {
+  multipartUpload(uploadFile)
 }
 
 // TODO: 提交表单
@@ -258,16 +297,14 @@ onMounted(() => {
           <el-upload
             ref="uploadCover"
             class="upload-Cover"
-            action="api/v1/sys-upload/file"
+            action
+            multiple
+            :auto-upload="false"
             accept=".jpg,.jpeg,.png,JPG,.PNG"
             :data="formDataCover"
-            :before-upload="beforeUploadCover"
-            :on-success="handleSuccessCover"
-            :on-error="handleErrorCover"
-            :on-progress="onUploadProgressCover"
             :show-file-list="false"
             :on-exceed="handleExceedCover"
-            :headers="{ Authorization: `${getToken()}` }"
+            :on-change="handleChangeCover"
           >
             <el-button type="primary">
               {{ uploadingCover ? '上传中...' : '点击上传封面' }}
@@ -283,20 +320,20 @@ onMounted(() => {
             </div>
           </el-upload>
         </el-form-item>
+
         <el-form-item label="资料" class="h-173px" prop="fileUrl">
           <el-upload
             ref="upload"
             class="upload-demo"
-            action="api/v1/sys-upload/file"
+            action
             accept=".jpg,.jpeg,.png,JPG,.PNG,.pdf,.mp4"
             :data="formData"
-            :before-upload="beforeUpload"
-            :on-success="handleSuccess"
-            :on-error="handleError"
-            :on-progress="onUploadProgress"
+            multiple
             :show-file-list="false"
             :on-exceed="handleExceed"
-            :headers="{ Authorization: `${getToken()}` }"
+            :on-change="handleChange"
+            :limit="1"
+            :auto-upload="false"
           >
             <el-button type="primary">
               {{ uploading ? '上传中...' : '点击上传材料' }}
@@ -321,7 +358,7 @@ onMounted(() => {
               </div>
               <video v-if="studyDataForm.type === 1 && studyDataForm.fileUrl" class="w-226px h-173px" :src="studyDataForm.fileUrl" controls />
               <el-image
-                v-if="studyDataForm.type === 2 && studyDataForm.fileUrl" class="w-226px h-173px" :src="studyDataForm.fileUrl" lazy preview-src-list="[studyDataForm.fileUrl]"
+                v-if="studyDataForm.type === 2 && studyDataForm.fileUrl" class="w-226px h-173px" :src="studyDataForm.fileUrl" lazy :preview-src-list="[`${studyDataForm.fileUrl}`]"
                 :initial-index="0"
                 fit="contain"
               />
