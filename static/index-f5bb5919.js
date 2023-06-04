@@ -1,1 +1,0 @@
-import{b6 as t}from"./index-af1b0f7f.js";function a(a){return t({url:"sys-flow/approval/list",method:"get",params:a})}function r(a){return t({url:"sys-flow/approval/update",method:"put",data:a})}export{a as g,r as s};
